@@ -1,0 +1,12 @@
+NO ./textures/blue.png
+SO ./textures/pink.png
+WE ./textures/white.png
+EA ./textures/black.png
+
+F 47,53,66
+C 236,204,104
+
+1111111111
+1E00000011
+1000110001
+1111111111
