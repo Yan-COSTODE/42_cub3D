@@ -1,6 +1,6 @@
-NO ./textures/blue.png
+NO ./textures/cyan.png
 SO ./textures/pink.png
-WE ./textures/white.png
+WE ./textures/yellow.png
 EA ./textures/black.png
 
 F 47,53,66

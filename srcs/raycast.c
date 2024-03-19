@@ -44,18 +44,14 @@ void fill_ceiling(t_program *program)
 void draw(t_program *program)
 {
 	int x;
-	int h;
-	int w;
 
-	w = WIDTH;
-	h = HEIGHT;
 	x = -1;
 	fill_ceiling(program);
 	fill_floor(program);
-	while (++x < w)
+	while (++x < WIDTH)
 	{
 		t_coord rayDir;
-		double cameraX = 2 * x / (double)w - 1;
+		double cameraX = 2 * x / (double)WIDTH - 1;
 		rayDir.x = program->player.dir.x + program->player.plane.x * cameraX;
 		rayDir.y = program->player.dir.y + program->player.plane.y * cameraX;
 
@@ -125,41 +121,73 @@ void draw(t_program *program)
 			perpWallDist = sideDist.y - deltaDist.y;
 
 		int lineHeight;
-		lineHeight = (int)(h / perpWallDist);
+		lineHeight = (int)(HEIGHT / perpWallDist);
 		int drawStart;
 		int drawEnd;
-		drawStart = -lineHeight / 2 + h / 2;
+		drawStart = -lineHeight / 2 + HEIGHT / 2;
 		if (drawStart < 0)
 			drawStart = 0;
-		drawEnd = lineHeight / 2 + h / 2;
-		if (drawEnd >= h)
-			drawEnd = h - 1;
+		drawEnd = lineHeight / 2 + HEIGHT / 2;
+		if (drawEnd >= HEIGHT)
+			drawEnd = HEIGHT - 1;
 
-		uint32_t color;
-		color = get_color_rgba(255, 107, 129, 255);
-		if (side == 1)
-			color = get_color_rgba(255 / 2, 107 / 2, 129 / 2, 255);
-		for (int l = drawStart; l <= drawEnd; l++)
-			mlx_put_pixel(program->map.img, x, l, color);
+		mlx_texture_t	*text;
+		double wallX;
+
+		if (side == 0)
+		{
+			wallX = program->player.pos.y + perpWallDist * rayDir.y;
+			if (program->player.pos.x < map.x)
+				text = program->map.east;
+			else
+				text = program->map.west;
+		}
+		else
+		{
+			wallX = program->player.pos.x + perpWallDist * rayDir.x;
+			if (program->player.pos.y < map.y)
+				text = program->map.south;
+			else
+				text = program->map.north;
+		}
+
+		wallX -= floor(wallX);
+		t_coord_int tex;
+
+		tex.x = (int)(wallX * (double)(text->width));
+		if (side == 0 && rayDir.x > 0)
+			tex.x = text->width - tex.x - 1;
+		else if (side == 1 && rayDir.y < 0)
+			tex.x = text->width - tex.x - 1;
+
+		double texStep;
+		double texPos;
+		int y;
+
+		texStep = 1.0 * text->height / lineHeight;
+		texPos = (drawStart - HEIGHT / 2 + lineHeight / 2) * texStep;
+		y = -1;
+		while (++y < drawEnd)
+		{
+			tex.y = (int)(texPos) & (text->height - 1);
+			texPos += texStep;
+			mlx_put_pixel(program->map.img, x, y, text->pixels[text->height * tex.y + tex.x]);
+		}
 	}
 }
 
 /*
- void raycast(t_program *program)
+void draw(t_program *program)
 {
 	int x;
-	int h;
-	int w;
 
-	w = WIDTH;
-	h = HEIGHT;
 	x = -1;
 	fill_ceiling(program);
 	fill_floor(program);
-	while (++x < w)
+	while (++x < WIDTH)
 	{
 		t_coord rayDir;
-		double cameraX = 2 * x / (double)w - 1;
+		double cameraX = 2 * x / (double)WIDTH - 1;
 		rayDir.x = program->player.dir.x + program->player.plane.x * cameraX;
 		rayDir.y = program->player.dir.y + program->player.plane.y * cameraX;
 
@@ -229,15 +257,15 @@ void draw(t_program *program)
 			perpWallDist = sideDist.y - deltaDist.y;
 
 		int lineHeight;
-		lineHeight = (int)(h / perpWallDist);
+		lineHeight = (int)(HEIGHT / perpWallDist);
 		int drawStart;
 		int drawEnd;
-		drawStart = -lineHeight / 2 + h / 2;
+		drawStart = -lineHeight / 2 + HEIGHT / 2;
 		if (drawStart < 0)
 			drawStart = 0;
-		drawEnd = lineHeight / 2 + h / 2;
-		if (drawEnd >= h)
-			drawEnd = h - 1;
+		drawEnd = lineHeight / 2 + HEIGHT / 2;
+		if (drawEnd >= HEIGHT)
+			drawEnd = HEIGHT - 1;
 
 		uint32_t color;
 		color = get_color_rgba(255, 107, 129, 255);

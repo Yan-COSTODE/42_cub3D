@@ -71,6 +71,7 @@ int main(int argc, char **argv)
 	if (start(&program) == EXIT_FAILURE)
 		return (EXIT_FAILURE);
 	print_map(program.map);
+	mlx_close_hook(program.mlx, (void (*)(void *))on_destroy, &program);
 	mlx_loop_hook(program.mlx, update, &program);
 	mlx_loop(program.mlx);
 	mlx_terminate(program.mlx);

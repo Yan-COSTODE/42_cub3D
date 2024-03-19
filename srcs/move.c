@@ -33,36 +33,6 @@ void move_left(t_program *program, double move_speed)
 	int x;
 	int y;
 
-	/*
-	 * dir.x = 1
-	 * dir.y = 0
-	 * get_at(pos.x + 0 * move_speed)
-	 *	pos.x += 0 * move_speed;
-	 * get_at(pos.y + -1 * move_speed)
-	 *  pos.y += -1 * move_speed;
-	 *
-	 * dir.x = -1
-	 * dir.y = 0
-	 * get_at(pos.x + 0 * move_speed)
-	 *	pos.x += 0 * move_speed;
-	 * get_at(pos.y + 1 * move_speed)
-	 *  pos.y += 1 * move_speed;
-	 *
-	 * dir.x = 0
-	 * dir.y = 1
-	 * get_at(pos.x + 1 * move_speed)
-	 *  pos.x += 1 * move_speed;
-	 * get_at(pos.y + 0 * move_speed)
-	 *  pos.y += 0 * move_speed;
-	 *
-	 * dir.x = 0
-	 * dir.y = -1
-	 * get_at(pos.x + -1 * move_speed)
-	 *  pos.x += -1 * move_speed;
-	 * get_at(pos.y + 0 * move_speed)
-	 *  pos.y += 0 * move_speed;
-	 */
-
 	x = program->player.pos.x + program->player.dir.y * move_speed;
 	y = program->player.pos.y - program->player.dir.x * move_speed;
 
