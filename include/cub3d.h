@@ -14,7 +14,6 @@
 # define CUB3D_H
 
 # include "MLX42/MLX42.h"
-# include "enum.h"
 # include "struct.h"
 # include <errno.h>
 # include <fcntl.h>
@@ -30,7 +29,7 @@
 # define FD_MAX 1024
 # define HEIGHT 720
 # define WIDTH 1280
-# define MOVE_SPEED 5.0
+# define MOVE_SPEED 3.0
 # define ROTATE_SPEED 3.0
 # define BIG 1e30
 
@@ -70,9 +69,10 @@ void	set_at(t_map *map, int x, int y, char c);
 void	print_map(t_map map);
 
 // MOVE
-void move(mlx_key_data_t keydata, t_program *program);
+void move(t_program *program);
+void rotate(t_program *program);
 
 // TEST
-void raycast(t_program *program);
+void draw(t_program *program);
 
 #endif

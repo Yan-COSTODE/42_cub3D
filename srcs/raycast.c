@@ -23,9 +23,9 @@ void fill_floor(t_program *program)
 	t_coord_int y;
 
 	x.x = 0;
-	x.y = WIDTH;
+	x.y = WIDTH - 1;
 	y.x = HEIGHT / 2;
-	y.y = HEIGHT;
+	y.y = HEIGHT - 1;
 	fill(program, x, y, program->map.floor.rgba);
 }
 
@@ -35,13 +35,13 @@ void fill_ceiling(t_program *program)
 	t_coord_int y;
 
 	x.x = 0;
-	x.y = WIDTH;
+	x.y = WIDTH - 1;
 	y.x = 0;
-	y.y = HEIGHT / 2;
+	y.y = HEIGHT / 2 - 1;
 	fill(program, x, y, program->map.ceiling.rgba);
 }
 
-void raycast(t_program *program)
+void draw(t_program *program)
 {
 	int x;
 	int h;

@@ -11,11 +11,15 @@ void init_program(t_program *program)
 
 void on_destroy(t_program *program)
 {
+	if (program->map.north)
+		mlx_delete_texture(program->map.north);
+	if (program->map.south)
+		mlx_delete_texture(program->map.south);
+	if (program->map.east)
+		mlx_delete_texture(program->map.east);
+	if (program->map.west)
+		mlx_delete_texture(program->map.west);
 	mlx_close_window(program->mlx);
-	mlx_delete_texture(program->map.north);
-	mlx_delete_texture(program->map.south);
-	mlx_delete_texture(program->map.east);
-	mlx_delete_texture(program->map.west);
 }
 
 int start(t_program *program)
@@ -32,20 +36,28 @@ int start(t_program *program)
 	return (EXIT_SUCCESS);
 }
 
-void update(void *param)
+void print_fps(t_program program)
 {
 	static mlx_image_t *img = NULL;
-	t_program	*program;
 	char	fps[100];
+
+	if (img)
+		mlx_delete_image(program.mlx, img);
+	sprintf(fps, "%.0f", 1 / program.mlx->delta_time);
+	img = mlx_put_string(program.mlx, fps, 4, 0);
+}
+
+void update(void *param)
+{
+	t_program	*program;
 
 	program = param;
 	if (mlx_is_key_down(program->mlx, MLX_KEY_ESCAPE))
-		on_destroy(program);
-	//raycast(program);
-	if (img)
-		mlx_delete_image(program->mlx, img);
-	sprintf(fps, "%.0f FPS", 1 / program->mlx->delta_time);
-	img = mlx_put_string(program->mlx, fps, 0, 0);
+		return (on_destroy(program));
+	move(program);
+	rotate(program);
+	draw(program);
+	print_fps(*program);
 }
 
 int main(int argc, char **argv)
@@ -59,9 +71,6 @@ int main(int argc, char **argv)
 	if (start(&program) == EXIT_FAILURE)
 		return (EXIT_FAILURE);
 	print_map(program.map);
-	raycast(&program);
-	mlx_key_hook(program.mlx, (void (*)(mlx_key_data_t, void *))
-		move, &program);
 	mlx_loop_hook(program.mlx, update, &program);
 	mlx_loop(program.mlx);
 	mlx_terminate(program.mlx);
