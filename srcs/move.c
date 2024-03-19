@@ -8,9 +8,9 @@ void move_up(t_program *program, double move_speed)
 	x = program->player.pos.x + program->player.dir.x * move_speed;
 	y = program->player.pos.y + program->player.dir.y * move_speed;
 
-	if (get_at(program->map, x, program->player.pos.y) != '1')
+	if (get_at(program->map, x, program->map.height - program->player.pos.y) != '1')
 		program->player.pos.x += program->player.dir.x * move_speed;
-	if (get_at(program->map, program->player.pos.x, y) != '1')
+	if (get_at(program->map, program->player.pos.x, program->map.height - (y + 1)) != '1')
 		program->player.pos.y += program->player.dir.y * move_speed;
 }
 
@@ -22,24 +22,10 @@ void move_down(t_program *program, double move_speed)
 	x = program->player.pos.x - program->player.dir.x * move_speed;
 	y = program->player.pos.y - program->player.dir.y * move_speed;
 
-	if (get_at(program->map, x, program->player.pos.y) != '1')
+	if (get_at(program->map, x, program->map.height - program->player.pos.y) != '1')
 		program->player.pos.x -= program->player.dir.x * move_speed;
-	if (get_at(program->map, program->player.pos.x, y) != '1')
+	if (get_at(program->map, program->player.pos.x, program->map.height - (y + 1)) != '1')
 		program->player.pos.y -= program->player.dir.y * move_speed;
-}
-
-void move_left(t_program *program, double move_speed)
-{
-	int x;
-	int y;
-
-	x = program->player.pos.x + program->player.dir.y * move_speed;
-	y = program->player.pos.y - program->player.dir.x * move_speed;
-
-	if (get_at(program->map, x, program->player.pos.y) != '1')
-		program->player.pos.x += program->player.dir.y * move_speed;
-	if (get_at(program->map, program->player.pos.x, y) != '1')
-		program->player.pos.y -= program->player.dir.x * move_speed;
 }
 
 void move_right(t_program *program, double move_speed)
@@ -47,16 +33,30 @@ void move_right(t_program *program, double move_speed)
 	int x;
 	int y;
 
+	x = program->player.pos.x + program->player.dir.y * move_speed;
+	y = program->player.pos.y - program->player.dir.x * move_speed;
+
+	if (get_at(program->map, x, program->map.height - program->player.pos.y) != '1')
+		program->player.pos.x += program->player.dir.y * move_speed;
+	if (get_at(program->map, program->player.pos.x, program->map.height - (y + 1)) != '1')
+		program->player.pos.y -= program->player.dir.x * move_speed;
+}
+
+void move_left(t_program *program, double move_speed)
+{
+	int x;
+	int y;
+
 	x = program->player.pos.x - program->player.dir.y * move_speed;
 	y = program->player.pos.y + program->player.dir.x * move_speed;
 
-	if (get_at(program->map, x, program->player.pos.y) != '1')
+	if (get_at(program->map, x, program->map.height - program->player.pos.y) != '1')
 		program->player.pos.x -= program->player.dir.y * move_speed;
-	if (get_at(program->map, program->player.pos.x, y) != '1')
+	if (get_at(program->map, program->player.pos.x, program->map.height - (y + 1)) != '1')
 		program->player.pos.y += program->player.dir.x * move_speed;
 }
 
-void rotate_left(t_program *program, double rotate_speed)
+void rotate_right(t_program *program, double rotate_speed)
 {
 	double oldDirX;
 	double oldPlaneX;
@@ -69,7 +69,7 @@ void rotate_left(t_program *program, double rotate_speed)
 	program->player.plane.y = oldPlaneX * sin(-rotate_speed) + program->player.plane.y * cos(-rotate_speed);
 }
 
-void rotate_right(t_program *program, double rotate_speed)
+void rotate_left(t_program *program, double rotate_speed)
 {
 	double oldDirX;
 	double oldPlaneX;

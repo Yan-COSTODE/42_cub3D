@@ -40,17 +40,17 @@ void parse_error_color(int *status, char *name, char **split, char *color)
 	print_fd(2, ": Wrong Value\n\x1b[0m");
 }
 
-void	parse_texture(int *status, mlx_texture_t* texture, char **args)
+void	parse_texture(int *status, mlx_texture_t** texture, char **args)
 {
 	char *tmp;
 
 	if (ft_strlen_split(args) == 2)
 	{
 		tmp = ft_substr(args[1], 0, ft_strchr(args[1], '\n') - args[1]);
-		texture = mlx_load_png(tmp);
+		*texture = mlx_load_png(tmp);
 		free(tmp);
 	}
-	if (ft_strlen_split(args) != 2 || !texture)
+	if (ft_strlen_split(args) != 2 || !texture || !*texture)
 		return (parse_error(status, args[0]));
 }
 
@@ -127,13 +127,13 @@ void	parse_map(t_program *program, char *line)
 
 	split = ft_split(line, ' ');
 	if (ft_strcmp(split[0], "NO") == 0 && !program->map.content)
-		parse_texture(&program->exit_value, program->map.north, split);
+		parse_texture(&program->exit_value, &program->map.north, split);
 	else if (ft_strcmp(split[0], "SO") == 0 && !program->map.content)
-		parse_texture(&program->exit_value, program->map.south, split);
+		parse_texture(&program->exit_value, &program->map.south, split);
 	else if (ft_strcmp(split[0], "WE") == 0 && !program->map.content)
-		parse_texture(&program->exit_value, program->map.west, split);
+		parse_texture(&program->exit_value, &program->map.west, split);
 	else if (ft_strcmp(split[0], "EA") == 0 && !program->map.content)
-		parse_texture(&program->exit_value, program->map.east, split);
+		parse_texture(&program->exit_value, &program->map.east, split);
 	else if (ft_strcmp(split[0], "F") == 0 && !program->map.content)
 		parse_color(&program->exit_value, &program->map.floor, split);
 	else if (ft_strcmp(split[0], "C") == 0 && !program->map.content)
@@ -156,7 +156,7 @@ void set_player_orientation(t_program *program)
 	{
 		program->player.dir.x = 0;
 		program->player.dir.y = -1;
-		program->player.plane.x = 1;
+		program->player.plane.x = -1;
 		program->player.plane.y = 0;
 	}
 	else if (program->player.orientation == 'E')
@@ -164,7 +164,7 @@ void set_player_orientation(t_program *program)
 		program->player.dir.x = 1;
 		program->player.dir.y = 0;
 		program->player.plane.x = 0;
-		program->player.plane.y = 1;
+		program->player.plane.y = -1;
 	}
 	else if (program->player.orientation == 'W')
 	{
