@@ -1,6 +1,6 @@
 #include "cub3d.h"
 
-void fill(t_program *program, t_coord_int x, t_coord_int y, uint32_t color)
+void fill_map(t_program *program, t_coord_int x, t_coord_int y, uint32_t color)
 {
 	t_coord_int index;
 
@@ -26,7 +26,7 @@ void fill_floor(t_program *program)
 	x.y = WIDTH - 1;
 	y.x = HEIGHT / 2;
 	y.y = HEIGHT - 1;
-	fill(program, x, y, program->map.floor.rgba);
+	fill_map(program, x, y, program->map.floor.rgba);
 }
 
 void fill_ceiling(t_program *program)
@@ -38,7 +38,7 @@ void fill_ceiling(t_program *program)
 	x.y = WIDTH - 1;
 	y.x = 0;
 	y.y = HEIGHT / 2 - 1;
-	fill(program, x, y, program->map.ceiling.rgba);
+	fill_map(program, x, y, program->map.ceiling.rgba);
 }
 
 void draw(t_program *program)

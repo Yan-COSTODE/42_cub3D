@@ -33,6 +33,12 @@ typedef struct s_color
 	uint32_t	rgba;
 }	t_color;
 
+typedef struct s_minimap
+{
+	mlx_image_t *img;
+	mlx_image_t *img_player;
+}	t_minimap;
+
 typedef struct s_map
 {
 	mlx_texture_t	*north;
@@ -58,6 +64,7 @@ typedef struct s_player
 typedef struct s_program
 {
 	mlx_t	*mlx;
+	t_minimap minimap;
 	t_map	map;
 	t_player player;
 	char	*filename;

@@ -29,6 +29,11 @@
 # define FD_MAX 1024
 # define HEIGHT 720
 # define WIDTH 1280
+# define MINIMAP_CELLS 5
+# define MINIMAP_CELL 32
+# define MINIMAP_SIZE MINIMAP_CELL * MINIMAP_CELLS
+# define MINIMAP_OFFSET 16
+# define MINIMAP_PLAYER 16
 # define MOVE_SPEED 3.0
 # define ROTATE_SPEED 3.0
 # define BIG 1e30
@@ -74,5 +79,6 @@ void rotate(t_program *program);
 
 // TEST
 void draw(t_program *program);
+void draw_minimap(t_program *program);
 
 #endif

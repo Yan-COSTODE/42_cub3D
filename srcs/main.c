@@ -22,6 +22,21 @@ void on_destroy(t_program *program)
 	mlx_close_window(program->mlx);
 }
 
+void parse_minimap(t_program *program)
+{
+	mlx_texture_t *tmp;
+
+	tmp = mlx_load_png("./textures/player.png");
+	if (tmp)
+	{
+		program->minimap.img_player = mlx_texture_to_image(program->mlx, tmp);
+		mlx_resize_image(program->minimap.img_player, MINIMAP_PLAYER, MINIMAP_PLAYER);
+		mlx_delete_texture(tmp);
+	}
+	else
+		program->minimap.img_player = NULL;
+}
+
 int start(t_program *program)
 {
 	init_program(program);
@@ -32,19 +47,13 @@ int start(t_program *program)
 	if (!program->mlx)
 		return (print_mlxerror("cub3D"));
 	program->map.img = mlx_new_image(program->mlx, WIDTH, HEIGHT);
+	program->minimap.img = mlx_new_image(program->mlx, MINIMAP_SIZE * 2, MINIMAP_SIZE);
+	parse_minimap(program);
 	mlx_image_to_window(program->mlx, program->map.img, 0, 0);
+	mlx_image_to_window(program->mlx, program->minimap.img, MINIMAP_OFFSET, MINIMAP_OFFSET);
+	if (program->minimap.img_player)
+		mlx_image_to_window(program->mlx, program->minimap.img_player, MINIMAP_OFFSET + MINIMAP_SIZE - program->minimap.img_player->width / 2, MINIMAP_OFFSET + MINIMAP_SIZE / 2 - program->minimap.img_player->height / 2);
 	return (EXIT_SUCCESS);
-}
-
-void print_fps(t_program program)
-{
-	static mlx_image_t *img = NULL;
-	char	fps[100];
-
-	if (img)
-		mlx_delete_image(program.mlx, img);
-	sprintf(fps, "%.0f", 1 / program.mlx->delta_time);
-	img = mlx_put_string(program.mlx, fps, 4, 0);
 }
 
 void update(void *param)
@@ -57,7 +66,7 @@ void update(void *param)
 	move(program);
 	rotate(program);
 	draw(program);
-	print_fps(*program);
+	draw_minimap(program);
 }
 
 int main(int argc, char **argv)
