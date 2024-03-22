@@ -11,6 +11,8 @@ void init_program(t_program *program)
 
 void on_destroy(t_program *program)
 {
+	free(program->filename);
+	free(program->map.content);
 	if (program->map.north)
 		mlx_delete_texture(program->map.north);
 	if (program->map.south)

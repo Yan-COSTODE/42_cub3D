@@ -138,17 +138,17 @@ void draw(t_program *program)
 		{
 			wallX = program->player.pos.y + perpWallDist * rayDir.y;
 			if (program->player.pos.x < map.x)
-				text = program->map.east;
-			else
 				text = program->map.west;
+			else
+				text = program->map.east;
 		}
 		else
 		{
 			wallX = program->player.pos.x + perpWallDist * rayDir.x;
 			if (program->player.pos.y < map.y)
-				text = program->map.north;
-			else
 				text = program->map.south;
+			else
+				text = program->map.north;
 		}
 
 		wallX -= floor(wallX);
