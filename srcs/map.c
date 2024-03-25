@@ -6,14 +6,14 @@ char	get_at(const t_map map, int x, int y)
 		return (' ');
 	if ((x > map.width || x < 0) || (y > map.height || y < 0))
 		return (' ');
-	return (map.content[x + (y * map.width)]);
+	return (map.content[y][x]);
 }
 
 void	set_at(t_map *map, int x, int y, char c)
 {
 	if (get_at(*map, x, y) == ' ')
 		return ;
-	map->content[x + (y * map->width)] = c;
+	map->content[y][x] = c;
 }
 
 void	print_map(t_map map)

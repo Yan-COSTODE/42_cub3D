@@ -103,27 +103,39 @@ bool is_empty_line(char *line)
 	return (true);
 }
 
-void	parse_content(t_map *map, char *line)
+void	parse_content(t_program *program)
 {
 	char *tmp;
+	char	*line;
 	char *final;
 
-	if (!map->content && is_empty_line(line))
-		return ;
-	tmp = ft_substr(line, 0, ft_strchr(line, '\n') - line);
-	if ((int)ft_strlen(tmp) > map->width)
-		map->width = ft_strlen(tmp);
-	final = ft_strjoin(map->content, tmp);
-	if (map->content)
-		free(map->content);
-	free(tmp);
-	map->content = final;
-	++map->height;
+	line = get_next_line(program->fd);
+	while (line[0] == '\n')
+	{
+		free(line);
+		line = get_next_line(program->fd);
+	}
+	final = line;
+	line = get_next_line(program->fd);
+	while (line)
+	{
+		tmp = ft_strjoin(final, line);
+		free(final);
+		final = tmp;
+		if ((int)ft_strlen(line) > program->map.width)
+			program->map.width = ft_strlen(line);
+		free(line);
+		line = get_next_line(program->fd);
+		program->map.height++;
+	}
+	program->map.content = ft_split(final, '\n');
+	free(final);
 }
 
-void	parse_map(t_program *program, char *line)
+int	parse_map(t_program *program, char *line)
 {
 	char **split;
+	static int	args = 0;
 
 	split = ft_split(line, ' ');
 	if (ft_strcmp(split[0], "NO") == 0 && !program->map.content)
@@ -139,8 +151,13 @@ void	parse_map(t_program *program, char *line)
 	else if (ft_strcmp(split[0], "C") == 0 && !program->map.content)
 		parse_color(&program->exit_value, &program->map.ceiling, split);
 	else
-		parse_content(&program->map, line);
+	{
+		ft_freesplit(split);
+		return (args);
+	}
+	args++;
 	ft_freesplit(split);
+	return (args);
 }
 
 void set_player_orientation(t_program *program)
@@ -210,18 +227,25 @@ void parse_player(t_program *program)
 void parse(t_program *program)
 {
 	char	*line;
+	int		n_line;
 
 	open_file(program);
 	if (program->exit_value == EXIT_FAILURE)
 		return ;
 	line = "";
+	n_line = 0;
 	while (line)
 	{
 		line = get_next_line(program->fd);
 		if (line)
 		{
-			parse_map(program, line);
-			free(line);
+			if (parse_map(program, line) == 6)
+			{
+				parse_content(program);
+				break;
+			}
+			else
+				free(line);
 			line = "";
 		}
 	}
