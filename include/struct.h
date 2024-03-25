@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   struct.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ycostode <ycostode@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gmarre <gmarre@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/09 16:31:55 by ycostode          #+#    #+#             */
-/*   Updated: 2024/03/13 16:29:51 by ycostode         ###   ########.fr       */
+/*   Updated: 2024/03/25 12:02:03 by gmarre           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ typedef struct s_map
 	mlx_texture_t	*west;
 	t_color floor;
 	t_color ceiling;
-	char	*content;
+	char	**content;
 	mlx_image_t	*img;
 	int	width;
 	int	height;
