@@ -47,8 +47,12 @@ void draw_minimap(t_program *program)
 				continue;
 			x.x = index.x * MINIMAP_CELL - diff.x * MINIMAP_CELL;
 			x.y = x.x + MINIMAP_CELL - 1;
+			if (x.x < 0)
+				x.x = 0;
 			y.x = index.y * MINIMAP_CELL - diff.y * MINIMAP_CELL;
 			y.y = y.x + MINIMAP_CELL - 1;
+			if (y.x < 0)
+				y.x = 0;
 			if (get_at(program->map, comp.x, comp.y) == '1')
 				fill_minimap(program, x, y, get_color_rgba(241, 242, 246, 255));
 			else if (get_at(program->map, comp.x, comp.y) != ' ')
