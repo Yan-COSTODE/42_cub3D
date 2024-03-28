@@ -1,5 +1,19 @@
 #include "cub3d.h"
 
+void change_cursor(mouse_key_t button, action_t action, modifier_key_t mods, void *param)
+{
+	t_program *program;
+
+	(void)mods;
+	if (button != MLX_MOUSE_BUTTON_LEFT || action != MLX_PRESS)
+		return;
+	program = param;
+	if (program->cursor == MLX_MOUSE_HIDDEN)
+		program->cursor = MLX_MOUSE_NORMAL;
+	else if (program->cursor == MLX_MOUSE_NORMAL)
+		program->cursor = MLX_MOUSE_HIDDEN;
+}
+
 void init_program(t_program *program)
 {
 	program->exit_value = 0;
@@ -7,6 +21,7 @@ void init_program(t_program *program)
 	program->map.width = 0;
 	program->map.content = NULL;
 	program->player.orientation = 0;
+	program->cursor = MLX_MOUSE_HIDDEN;
 }
 
 void on_destroy(t_program *program)
@@ -49,10 +64,11 @@ int start(t_program *program)
 	if (!program->mlx)
 		return (print_mlxerror("cub3D"));
 	program->map.img = mlx_new_image(program->mlx, WIDTH, HEIGHT);
-	program->minimap.img = mlx_new_image(program->mlx, MINIMAP_SIZE * 2, MINIMAP_SIZE);
+	program->minimap.img = mlx_new_image(program->mlx, MINIMAP_SIZE * 2, MINIMAP_SIZE * 2);
+	program->minimap.display = mlx_new_image(program->mlx, MINIMAP_SIZE * 2, MINIMAP_SIZE);
 	parse_minimap(program);
 	mlx_image_to_window(program->mlx, program->map.img, 0, 0);
-	mlx_image_to_window(program->mlx, program->minimap.img, MINIMAP_OFFSET, MINIMAP_OFFSET);
+	mlx_image_to_window(program->mlx, program->minimap.display, MINIMAP_OFFSET, MINIMAP_OFFSET);
 	if (program->minimap.img_player)
 		mlx_image_to_window(program->mlx, program->minimap.img_player, MINIMAP_OFFSET + MINIMAP_SIZE - program->minimap.img_player->width / 2, MINIMAP_OFFSET + MINIMAP_SIZE / 2 - program->minimap.img_player->height / 2);
 	return (EXIT_SUCCESS);
@@ -69,6 +85,7 @@ void update(void *param)
 	rotate(program);
 	draw(program);
 	draw_minimap(program);
+	mlx_set_cursor_mode(program->mlx, program->cursor);
 }
 
 int main(int argc, char **argv)
@@ -88,6 +105,7 @@ int main(int argc, char **argv)
 	}
 	print_map(program.map);
 	mlx_close_hook(program.mlx, (void (*)(void *))on_destroy, &program);
+	mlx_mouse_hook(program.mlx, change_cursor, &program);
 	mlx_loop_hook(program.mlx, update, &program);
 	mlx_loop(program.mlx);
 	mlx_terminate(program.mlx);

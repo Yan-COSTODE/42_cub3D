@@ -17,6 +17,23 @@ void fill_minimap(t_program *program, t_coord_int x, t_coord_int y, uint32_t col
 	}
 }
 
+void fill_display(t_program *program, t_coord_int x, t_coord_int y, uint32_t color)
+{
+	t_coord_int index;
+
+	index.x = x.x;
+	while (index.x <= x.y)
+	{
+		index.y = y.x;
+		while (index.y <= y.y)
+		{
+			mlx_put_pixel(program->minimap.display, index.x, index.y, color);
+			++index.y;
+		}
+		++index.x;
+	}
+}
+
 uint32_t get_color_image(mlx_image_t* img, int x, int y)
 {
 	uint32_t coord = (img->height * y + x) * 4;
@@ -42,14 +59,27 @@ uint32_t bilinearInterp(mlx_image_t* image, double xP, double yP)
 	y.x = fmax(0, fmin(y.x, image->height - 1));
 	y.y = fmax(0, fmin(y.y, image->height - 1));
 
-	double top = get_color_image(image, x.x, y.x) * (1 - d.x) + get_color_image(image, x.y, y.x) * d.x;
-	double bottom = get_color_image(image, x.x, y.y) * (1 - d.x) + get_color_image(image, x.y, y.y) * d.x;
-	return (top * (1 - d.y) + bottom * d.y);
+	t_color topC;
+	topC.r = image->pixels[(image->height * y.x + x.x) * 4] * (1 - d.x) + image->pixels[(image->height * y.x + x.y) * 4] * d.x;
+	topC.g = image->pixels[(image->height * y.x + x.x) * 4 + 1] * (1 - d.x) + image->pixels[(image->height * y.x + x.y) * 4 + 1] * d.x;
+	topC.b = image->pixels[(image->height * y.x + x.x) * 4 + 2] * (1 - d.x) + image->pixels[(image->height * y.x + x.y) * 4 + 2] * d.x;
+	topC.a = image->pixels[(image->height * y.x + x.x) * 4 + 3] * (1 - d.x) + image->pixels[(image->height * y.x + x.y) * 4 + 3] * d.x;
+	t_color bottomC;
+	bottomC.r = image->pixels[(image->height * y.y + x.x) * 4] * (1 - d.x) + image->pixels[(image->height * y.y + x.y) * 4] * d.x;
+	bottomC.g = image->pixels[(image->height * y.y + x.x) * 4 + 1] * (1 - d.x) + image->pixels[(image->height * y.y + x.y) * 4 + 1] * d.x;
+	bottomC.b = image->pixels[(image->height * y.y + x.x) * 4 + 2] * (1 - d.x) + image->pixels[(image->height * y.y + x.y) * 4 + 2] * d.x;
+	bottomC.a = image->pixels[(image->height * y.y + x.x) * 4 + 3] * (1 - d.x) + image->pixels[(image->height * y.y + x.y) * 4 + 3] * d.x;
+	t_color final;
+	final.r = topC.r * (1 - d.y) + bottomC.r * d.y;
+	final.g = topC.g * (1 - d.y) + bottomC.g * d.y;
+	final.b = topC.b * (1 - d.y) + bottomC.b * d.y;
+	final.a = topC.a * (1 - d.y) + bottomC.a * d.y;
+	return (get_color_rgba(final.r, final.g, final.b, final.a));
 }
 
 void rotate_minimap(t_program *program)
 {
-	double angle = atan2(program->player.dir.y, program->player.dir.x);
+	double angle = atan2(program->player.dir.y, program->player.dir.x) - M_PI / 2;
 
 	t_coord xRot;
 	t_coord yRot;
@@ -59,23 +89,28 @@ void rotate_minimap(t_program *program)
 	xRot.y = sin(angle);
 	yRot.y = cos(angle);
 
-	mlx_image_t* tmp = mlx_new_image(program->mlx, MINIMAP_SIZE * 2, MINIMAP_SIZE);
 	int x = -1;
 	while (++x < MINIMAP_SIZE * 2)
 	{
 		int y = -1;
 		while (++y < MINIMAP_SIZE)
 		{
-			double rotatedX = x * xRot.x + y * xRot.y;
-			double rotatedY = x * yRot.x + y * yRot.y;
+			double transX = x - MINIMAP_SIZE;
+			double transY = y - MINIMAP_SIZE / 2;
+			double rotatedX = transX * xRot.x + transY * xRot.y;
+			double rotatedY = transX * yRot.x + transY * yRot.y;
+			rotatedX += MINIMAP_SIZE;
+			rotatedY += MINIMAP_SIZE / 2 + MINIMAP_CELL * 5;
+			rotatedX = round(rotatedX);
+			rotatedY = round(rotatedY);
 
-			uint32_t pixel = bilinearInterp(program->minimap.img, rotatedX, rotatedY);
-			mlx_put_pixel(tmp, x, y, pixel);
+			if (0 <= rotatedY && rotatedY < (MINIMAP_SIZE * 2) && 0 <= rotatedX && rotatedX < (MINIMAP_SIZE * 2))
+			{
+				uint32_t pixel = bilinearInterp(program->minimap.img, rotatedX, rotatedY);
+				mlx_put_pixel(program->minimap.display, x, y, pixel);
+			}
 		}
 	}
-	mlx_delete_image(program->mlx, program->minimap.img);
-	program->minimap.img = tmp;
-	mlx_image_to_window(program->mlx, program->minimap.img, MINIMAP_OFFSET, MINIMAP_OFFSET);
 }
 
 void draw_minimap(t_program *program)
@@ -91,6 +126,8 @@ void draw_minimap(t_program *program)
 	x.y = MINIMAP_SIZE * 2 - 1;
 	y.x = 0;
 	y.y = MINIMAP_SIZE - 1;
+	fill_display(program, x, y, get_color_rgba(47, 53, 66, 255 / 4));
+	y.y = MINIMAP_SIZE * 2 - 1;
 	fill_minimap(program, x, y, get_color_rgba(47, 53, 66, 255 / 4));
 	player.x = (int)(program->player.pos.x);
 	diff.x = program->player.pos.x - player.x;
@@ -100,10 +137,10 @@ void draw_minimap(t_program *program)
 	while (++index.x < MINIMAP_CELLS * 2)
 	{
 		index.y = -1;
-		while (++index.y < MINIMAP_CELLS)
+		while (++index.y < MINIMAP_CELLS * 2)
 		{
 			comp.x = player.x - MINIMAP_CELLS + index.x;
-			comp.y = player.y - MINIMAP_CELLS / 2 + index.y;
+			comp.y = player.y - MINIMAP_CELLS + index.y;
 			if (comp.x < 0 || comp.x > program->map.width - 1 || comp.y < 0 || comp.y > program->map.height - 1)
 				continue;
 			x.x = index.x * MINIMAP_CELL - diff.x * MINIMAP_CELL;

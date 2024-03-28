@@ -30,12 +30,14 @@ typedef struct s_color
 	unsigned char r;
 	unsigned char g;
 	unsigned char b;
+	unsigned char a;
 	uint32_t	rgba;
 }	t_color;
 
 typedef struct s_minimap
 {
 	mlx_image_t *img;
+	mlx_image_t *display;
 	mlx_image_t *img_player;
 }	t_minimap;
 
@@ -70,6 +72,7 @@ typedef struct s_program
 	char	*filename;
 	int		fd;
 	int		exit_value;
+	enum mouse_mode cursor;
 }			t_program;
 
 #endif

@@ -87,6 +87,8 @@ void rotate(t_program *program)
 	t_coord_int mouse;
 	double rotate_speed;
 
+	if (program->cursor == MLX_MOUSE_NORMAL)
+		return ;
 	rotate_speed = program->mlx->delta_time * ROTATE_SPEED;
 	if (mlx_is_key_down(program->mlx, MLX_KEY_RIGHT))
 		rotate_right(program, rotate_speed);
