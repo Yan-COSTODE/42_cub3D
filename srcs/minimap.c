@@ -17,6 +17,67 @@ void fill_minimap(t_program *program, t_coord_int x, t_coord_int y, uint32_t col
 	}
 }
 
+uint32_t get_color_image(mlx_image_t* img, int x, int y)
+{
+	uint32_t coord = (img->height * y + x) * 4;
+	return(get_color_rgba(img->pixels[coord], img->pixels[coord + 1], img->pixels[coord + 2], img->pixels[coord + 3]));
+}
+
+uint32_t bilinearInterp(mlx_image_t* image, double xP, double yP)
+{
+	t_coord_int x;
+	t_coord_int y;
+
+	x.x = (int)(xP);
+	x.y = x.x + 1;
+	y.x = (int)(yP);
+	y.y = y.x + 1;
+
+	t_coord d;
+	d.x = xP - x.x;
+	d.y = yP - y.y;
+
+	x.x = fmax(0, fmin(x.x, image->width - 1));
+	x.y = fmax(0, fmin(x.y, image->width - 1));
+	y.x = fmax(0, fmin(y.x, image->height - 1));
+	y.y = fmax(0, fmin(y.y, image->height - 1));
+
+	double top = get_color_image(image, x.x, y.x) * (1 - d.x) + get_color_image(image, x.y, y.x) * d.x;
+	double bottom = get_color_image(image, x.x, y.y) * (1 - d.x) + get_color_image(image, x.y, y.y) * d.x;
+	return (top * (1 - d.y) + bottom * d.y);
+}
+
+void rotate_minimap(t_program *program)
+{
+	double angle = atan2(program->player.dir.y, program->player.dir.x);
+
+	t_coord xRot;
+	t_coord yRot;
+
+	xRot.x = cos(angle);
+	yRot.x = -sin(angle);
+	xRot.y = sin(angle);
+	yRot.y = cos(angle);
+
+	mlx_image_t* tmp = mlx_new_image(program->mlx, MINIMAP_SIZE * 2, MINIMAP_SIZE);
+	int x = -1;
+	while (++x < MINIMAP_SIZE * 2)
+	{
+		int y = -1;
+		while (++y < MINIMAP_SIZE)
+		{
+			double rotatedX = x * xRot.x + y * xRot.y;
+			double rotatedY = x * yRot.x + y * yRot.y;
+
+			uint32_t pixel = bilinearInterp(program->minimap.img, rotatedX, rotatedY);
+			mlx_put_pixel(tmp, x, y, pixel);
+		}
+	}
+	mlx_delete_image(program->mlx, program->minimap.img);
+	program->minimap.img = tmp;
+	mlx_image_to_window(program->mlx, program->minimap.img, MINIMAP_OFFSET, MINIMAP_OFFSET);
+}
+
 void draw_minimap(t_program *program)
 {
 	t_coord_int x;
@@ -59,4 +120,5 @@ void draw_minimap(t_program *program)
 				fill_minimap(program, x, y, get_color_rgba(47, 53, 66, 255));
 		}
 	}
+	rotate_minimap(program);
 }

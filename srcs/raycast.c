@@ -171,7 +171,8 @@ void draw(t_program *program)
 		{
 			tex.y = (int)(texPos) & (text->height - 1);
 			texPos += texStep;
-			uint32_t color = get_color_rgba(text->pixels[(text->height * tex.y + tex.x) * 4], text->pixels[(text->height * tex.y + tex.x) * 4 + 1], text->pixels[(text->height * tex.y + tex.x) * 4 + 2], text->pixels[(text->height * tex.y + tex.x) * 4 + 3]);
+			uint32_t coord = (text->height * tex.y + tex.x) * 4;
+			uint32_t color = get_color_rgba(text->pixels[coord], text->pixels[coord + 1], text->pixels[coord + 2], text->pixels[coord + 3]);
 			mlx_put_pixel(program->map.img, x, y, color);
 		}
 	}
