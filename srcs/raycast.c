@@ -131,7 +131,7 @@ void draw(t_program *program)
 		if (drawEnd >= HEIGHT)
 			drawEnd = HEIGHT - 1;
 
-		mlx_texture_t	*text;
+		mlx_image_t	*text;
 		double wallX;
 
 		if (side == 0)

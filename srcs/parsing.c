@@ -40,17 +40,24 @@ void parse_error_color(int *status, char *name, char **split, char *color)
 	print_fd(2, ": Wrong Value\n\x1b[0m");
 }
 
-void	parse_texture(int *status, mlx_texture_t** texture, char **args)
+void	parse_image(t_program *program, int *status, mlx_image_t** image, char **args)
 {
+	mlx_texture_t *tex;
 	char *tmp;
 
 	if (ft_strlen_split(args) == 2)
 	{
 		tmp = ft_substr(args[1], 0, ft_strchr(args[1], '\n') - args[1]);
-		*texture = mlx_load_png(tmp);
+		tex = mlx_load_png(tmp);
+		if (tex)
+		{
+			*image = mlx_texture_to_image(program->mlx, tex);
+			mlx_resize_image(*image, MAX_RES, MAX_RES);
+			mlx_delete_texture(tex);
+		}
 		free(tmp);
 	}
-	if (ft_strlen_split(args) != 2 || !texture || !*texture)
+	if (ft_strlen_split(args) != 2 || !image || !*image)
 		return (parse_error(status, args[0]));
 }
 
@@ -140,13 +147,13 @@ int	parse_map(t_program *program, char *line)
 
 	split = ft_split(line, ' ');
 	if (ft_strcmp(split[0], "NO") == 0 && !program->map.content)
-		parse_texture(&program->exit_value, &program->map.north, split);
+		parse_image(program, &program->exit_value, &program->map.north, split);
 	else if (ft_strcmp(split[0], "SO") == 0 && !program->map.content)
-		parse_texture(&program->exit_value, &program->map.south, split);
+		parse_image(program, &program->exit_value, &program->map.south, split);
 	else if (ft_strcmp(split[0], "WE") == 0 && !program->map.content)
-		parse_texture(&program->exit_value, &program->map.west, split);
+		parse_image(program, &program->exit_value, &program->map.west, split);
 	else if (ft_strcmp(split[0], "EA") == 0 && !program->map.content)
-		parse_texture(&program->exit_value, &program->map.east, split);
+		parse_image(program, &program->exit_value, &program->map.east, split);
 	else if (ft_strcmp(split[0], "F") == 0 && !program->map.content)
 		parse_color(&program->exit_value, &program->map.floor, split);
 	else if (ft_strcmp(split[0], "C") == 0 && !program->map.content)

@@ -27,9 +27,9 @@
 # include <math.h>
 # define BUFFER_SIZE 1024
 # define FD_MAX 1024
-# define HEIGHT 720
-# define WIDTH 1280
-# define MAX_RES 512
+# define HEIGHT 1080
+# define WIDTH 1920
+# define MAX_RES 1024
 # define MINIMAP_CELLS 10
 # define MINIMAP_CELL 16
 # define MINIMAP_SIZE MINIMAP_CELL * MINIMAP_CELLS

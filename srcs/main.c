@@ -28,14 +28,6 @@ void on_destroy(t_program *program)
 {
 	free(program->filename);
 	ft_freesplit(program->map.content);
-	if (program->map.north)
-		mlx_delete_texture(program->map.north);
-	if (program->map.south)
-		mlx_delete_texture(program->map.south);
-	if (program->map.east)
-		mlx_delete_texture(program->map.east);
-	if (program->map.west)
-		mlx_delete_texture(program->map.west);
 	mlx_close_window(program->mlx);
 }
 
@@ -57,12 +49,12 @@ void parse_minimap(t_program *program)
 int start(t_program *program)
 {
 	init_program(program);
-	parse(program);
-	if (program->exit_value == EXIT_FAILURE)
-		return (EXIT_FAILURE);
 	program->mlx = mlx_init(WIDTH, HEIGHT, "cub3D", false);
 	if (!program->mlx)
 		return (print_mlxerror("cub3D"));
+	parse(program);
+	if (program->exit_value == EXIT_FAILURE)
+		return (EXIT_FAILURE);
 	program->map.img = mlx_new_image(program->mlx, WIDTH, HEIGHT);
 	program->minimap.img = mlx_new_image(program->mlx, MINIMAP_SIZE * 2, MINIMAP_SIZE * 2);
 	program->minimap.display = mlx_new_image(program->mlx, MINIMAP_SIZE * 2, MINIMAP_SIZE);
