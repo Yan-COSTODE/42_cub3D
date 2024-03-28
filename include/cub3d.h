@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ycostode <ycostode@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gmarre <gmarre@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/09 15:19:27 by ycostode          #+#    #+#             */
-/*   Updated: 2024/03/13 16:33:19 by ycostode         ###   ########.fr       */
+/*   Updated: 2024/03/28 15:14:46 by gmarre           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,7 @@ int print_mlxerror(const char *msg);
 
 // PARSING
 void parse(t_program *program);
+int	parsing(t_program *program);
 char	*get_next_line(int fd);
 uint32_t get_color_rgba(int r, int g, int b, int a);
 

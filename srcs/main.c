@@ -12,7 +12,7 @@ void init_program(t_program *program)
 void on_destroy(t_program *program)
 {
 	free(program->filename);
-	free(program->map.content);
+	ft_freesplit(program->map.content);
 	if (program->map.north)
 		mlx_delete_texture(program->map.north);
 	if (program->map.south)
@@ -81,6 +81,11 @@ int main(int argc, char **argv)
 	program.filename = ft_strdup(argv[1]);
 	if (start(&program) == EXIT_FAILURE)
 		return (EXIT_FAILURE);
+	if (!parsing(&program))
+	{
+		on_destroy((void *)&program);
+		return (EXIT_FAILURE);
+	}
 	print_map(program.map);
 	mlx_close_hook(program.mlx, (void (*)(void *))on_destroy, &program);
 	mlx_loop_hook(program.mlx, update, &program);

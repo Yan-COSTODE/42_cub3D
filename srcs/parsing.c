@@ -117,6 +117,7 @@ void	parse_content(t_program *program)
 	}
 	final = line;
 	line = get_next_line(program->fd);
+	program->map.height++;
 	while (line)
 	{
 		tmp = ft_strjoin(final, line);
@@ -222,6 +223,34 @@ void parse_player(t_program *program)
 	}
 }
 
+void	fill_width(t_program *program)
+{
+	char *spaces;
+	int		line_len;
+	int		i;
+	int		j;
+
+	i = -1;
+	while (program->map.content[++i])
+	{
+		line_len = ft_strlen(program->map.content[i]);
+		if (line_len < program->map.width)
+		{
+			spaces = ft_calloc(program->map.width + 1, sizeof(char));
+			j = -1;
+			while (++j < program->map.width)
+			{
+				if (j < line_len)
+					spaces[j] = program->map.content[i][j];
+				else
+					spaces[j] = ' ';
+			}
+			free(program->map.content[i]);
+			program->map.content[i] = spaces;
+		}
+	}
+}
+
 // TODO check if the map is valid, closed by walls and no random char
 
 void parse(t_program *program)
@@ -241,14 +270,139 @@ void parse(t_program *program)
 		{
 			if (parse_map(program, line) == 6)
 			{
+				free(line);
 				parse_content(program);
+				fill_width(program);
 				break;
 			}
-			else
-				free(line);
-			line = "";
+			free(line);
 		}
 	}
 	parse_player(program);
 	close_file(program);
+}
+
+bool	check_sides(char *str)
+{
+	return (str[0] == '1' && str[ft_strlen(str) - 1] == '1');
+}
+
+int	check_first_last(char *str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] != ' ' || str[i] != '1')
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
+int check_middle(char *str)
+{
+	int i;
+
+	i = 0;
+	while (str[i])
+	{
+		if (i == 0 || i == (int)ft_strlen(str) - 1)
+		{
+			if (str[i] != ' ' || str[i] != '1')
+				return (0);
+		}
+		else
+			if (str[i] != ' ' || str[i] != '0' || str[i] != '1')
+				return (0);
+		i++;
+	}
+	return (1);
+}
+
+int is_space_surrounded(t_program *program, char **map, int y, int x)
+{
+	if (y != 0)
+		if (map[y - 1][x] != '1' && map[y - 1][x] != ' ')
+			return (0);
+	if (x != 0)
+		if (map[y][x - 1] != '1' && map[y][x - 1] != ' ')
+			return (0);
+	if (y != program->map.height - 1)
+		if (map[y + 1][x] != '1' && map[y + 1][x] != ' ')
+			return (0);
+	if (x != (int)ft_strlen(map[y]) - 1)
+		if (map[y][x + 1] != '1' && map[y][x + 1] != ' ')
+			return (0);
+	return (1);
+}
+
+int check_borders(t_program *program)
+{
+	int y;
+	int x;
+
+	y = 0;
+	while (program->map.content[y])
+	{
+		x = 0;
+		while (program->map.content[y][x] == ' ')
+			x++;
+		if (program->map.content[y][x] != '1')
+			return (0);
+		x = ft_strlen(program->map.content[y]) - 1;
+		while (program->map.content[y][x] == ' ')
+			x--;
+		if (program->map.content[y][x] != '1')
+			return (0);
+		y++;
+	}
+	return (1);
+}
+
+int	parsing(t_program *program)
+{
+	int	y;
+	int	x;
+	int player;
+
+	y = 0;
+	player = 0;
+	if (!check_borders(program))
+	{
+		print_error("Map is not fully bordered by 1's");
+		return (0);
+	}
+	while (program->map.content[y])
+	{
+		x = 0;
+		while (program->map.content[y][x])
+		{
+			if (program->map.content[y][x] == ' ')
+			{
+				if (!is_space_surrounded(program, program->map.content, y, x))
+				{
+					print_error("Space character is not surrounded by 1's");
+					return (0);
+				}
+			}
+			x++;
+			if (program->map.content[y][x] == 'N' || program->map.content[y][x] == 'S'
+				|| program->map.content[y][x] == 'W' || program->map.content[y][x] == 'E')
+					player++;
+		}
+		y++;
+	}
+	if (player > 1)
+	{
+		print_error("There can only be one spawn point");
+		return (0);
+	}
+	if (player == 0)
+	{
+		print_error("No spawn point has been set");
+		return (0);
+	}
+	return (1);
 }
