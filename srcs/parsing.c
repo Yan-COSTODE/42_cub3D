@@ -365,11 +365,13 @@ int	parsing(t_program *program)
 {
 	int	y;
 	int	x;
+	int player;
 
 	y = 0;
+	player = 0;
 	if (!check_borders(program))
 	{
-		print_fd(STDERR_FILENO, "Map is not fully bordered by 1's");
+		print_error("Map is not fully bordered by 1's");
 		return (0);
 	}
 	while (program->map.content[y])
@@ -381,13 +383,26 @@ int	parsing(t_program *program)
 			{
 				if (!is_space_surrounded(program, program->map.content, y, x))
 				{
-					print_fd(STDERR_FILENO, "Space character is not surrounded by 1's");
+					print_error("Space character is not surrounded by 1's");
 					return (0);
 				}
 			}
 			x++;
+			if (program->map.content[y][x] == 'N' || program->map.content[y][x] == 'S'
+				|| program->map.content[y][x] == 'W' || program->map.content[y][x] == 'E')
+					player++;
 		}
 		y++;
+	}
+	if (player > 1)
+	{
+		print_error("There can only be one spawn point");
+		return (0);
+	}
+	if (player == 0)
+	{
+		print_error("No spawn point has been set");
+		return (0);
 	}
 	return (1);
 }
