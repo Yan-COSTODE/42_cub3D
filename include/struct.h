@@ -34,6 +34,17 @@ typedef struct s_color
 	uint32_t	rgba;
 }	t_color;
 
+typedef struct s_hud
+{
+	mlx_image_t *crosshair;
+	mlx_image_t *gun[4];
+	int gindex;
+	int bobbing;
+	int direction;
+	double timer;
+	bool shoot;
+}	t_hud;
+
 typedef struct s_minimap
 {
 	mlx_image_t *img;
@@ -60,7 +71,12 @@ typedef struct s_player
 	t_coord plane;
 	t_coord dir;
 	t_coord pos;
+	double height;
+	double pitch;
 	char orientation;
+	bool sprint;
+	bool jump;
+	bool crouch;
 }	t_player;
 
 typedef struct s_program
@@ -69,6 +85,7 @@ typedef struct s_program
 	t_minimap minimap;
 	t_map	map;
 	t_player player;
+	t_hud hud;
 	char	*filename;
 	int		fd;
 	int		exit_value;

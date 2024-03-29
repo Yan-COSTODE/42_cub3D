@@ -27,16 +27,28 @@
 # include <math.h>
 # define BUFFER_SIZE 1024
 # define FD_MAX 1024
-# define HEIGHT 1080
-# define WIDTH 1920
+# define HEIGHT 720
+# define WIDTH 1280
 # define MAX_RES 1024
 # define MINIMAP_CELLS 10
 # define MINIMAP_CELL 16
 # define MINIMAP_SIZE MINIMAP_CELL * MINIMAP_CELLS
 # define MINIMAP_OFFSET 16
 # define MINIMAP_PLAYER 8
-# define MOVE_SPEED 3.0
-# define ROTATE_SPEED 3.0
+# define CROUCH_SPEED 2.0
+# define MOVE_SPEED 6.0
+# define SPRINT_SPEED 10.0
+# define ROTATE_SPEED 4.5
+# define PITCH_SPEED 1500.0
+# define PITCH_LIMIT 200
+# define JUMP_FORCE 1500.0
+# define JUMP_MAX 300
+# define GRAVITY_FORCE 1500.0
+# define CROUCH_FORCE 500.0
+# define CROUCH_MAX -200
+# define CROSSHAIR 32
+# define ANIM_DELAY 0.05
+# define MAX_BOBBING 50
 # define BIG 1e30
 
 // LIBFT
@@ -80,7 +92,10 @@ void move(t_program *program);
 void rotate(t_program *program);
 
 // TEST
+void setup_shoot(t_program *program);
+void shoot(t_program *program, bool try);
 void draw(t_program *program);
 void draw_minimap(t_program *program);
+void show_shoot_frame(t_program *program);
 
 #endif

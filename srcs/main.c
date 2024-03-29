@@ -5,9 +5,10 @@ void change_cursor(mouse_key_t button, action_t action, modifier_key_t mods, voi
 	t_program *program;
 
 	(void)mods;
-	if (button != MLX_MOUSE_BUTTON_LEFT || action != MLX_PRESS)
-		return;
 	program = param;
+	shoot(program, button == MLX_MOUSE_BUTTON_LEFT && action == MLX_PRESS);
+	if (button != MLX_MOUSE_BUTTON_RIGHT || action != MLX_PRESS)
+		return;
 	if (program->cursor == MLX_MOUSE_HIDDEN)
 		program->cursor = MLX_MOUSE_NORMAL;
 	else if (program->cursor == MLX_MOUSE_NORMAL)
@@ -21,7 +22,14 @@ void init_program(t_program *program)
 	program->map.width = 0;
 	program->map.content = NULL;
 	program->player.orientation = 0;
+	program->player.jump = false;
+	program->player.pitch = 0;
+	program->player.height = 0;
 	program->cursor = MLX_MOUSE_HIDDEN;
+	program->hud.bobbing = MAX_BOBBING;
+	program->hud.direction = -1;
+	program->hud.gindex = 0;
+	program->hud.shoot = false;
 }
 
 void on_destroy(t_program *program)
@@ -31,19 +39,30 @@ void on_destroy(t_program *program)
 	mlx_close_window(program->mlx);
 }
 
-void parse_minimap(t_program *program)
+void parse_to(t_program *program, mlx_image_t** image, char *path, int width, int height)
 {
 	mlx_texture_t *tmp;
 
-	tmp = mlx_load_png("./textures/player.png");
+	tmp = mlx_load_png(path);
 	if (tmp)
 	{
-		program->minimap.img_player = mlx_texture_to_image(program->mlx, tmp);
-		mlx_resize_image(program->minimap.img_player, MINIMAP_PLAYER, MINIMAP_PLAYER);
+		*image = mlx_texture_to_image(program->mlx, tmp);
+		mlx_resize_image(*image, width, height);
 		mlx_delete_texture(tmp);
 	}
 	else
-		program->minimap.img_player = NULL;
+		*image = NULL;
+}
+
+void parse_const(t_program *program)
+{
+	parse_to(program, &program->minimap.img_player, "./textures/player.png", MINIMAP_PLAYER, MINIMAP_PLAYER);
+	parse_to(program, &program->hud.crosshair, "./textures/crosshair.png", CROSSHAIR, CROSSHAIR);
+	parse_to(program, &program->hud.gun[0], "./textures/gun_0.png", 399, 288);
+	parse_to(program, &program->hud.gun[1], "./textures/gun_1.png", 399, 288);
+	parse_to(program, &program->hud.gun[2], "./textures/gun_2.png", 399, 288);
+	parse_to(program, &program->hud.gun[3], "./textures/gun_3.png", 399, 288);
+	setup_shoot(program);
 }
 
 int start(t_program *program)
@@ -58,9 +77,11 @@ int start(t_program *program)
 	program->map.img = mlx_new_image(program->mlx, WIDTH, HEIGHT);
 	program->minimap.img = mlx_new_image(program->mlx, MINIMAP_SIZE * 2, MINIMAP_SIZE * 2);
 	program->minimap.display = mlx_new_image(program->mlx, MINIMAP_SIZE * 2, MINIMAP_SIZE);
-	parse_minimap(program);
 	mlx_image_to_window(program->mlx, program->map.img, 0, 0);
+	parse_const(program);
 	mlx_image_to_window(program->mlx, program->minimap.display, MINIMAP_OFFSET, MINIMAP_OFFSET);
+	if (program->hud.crosshair)
+		mlx_image_to_window(program->mlx, program->hud.crosshair, WIDTH / 2 - program->hud.crosshair->width / 2, HEIGHT / 2 - program->hud.crosshair->height / 2);
 	if (program->minimap.img_player)
 		mlx_image_to_window(program->mlx, program->minimap.img_player, MINIMAP_OFFSET + MINIMAP_SIZE - program->minimap.img_player->width / 2, MINIMAP_OFFSET + MINIMAP_SIZE / 2 - program->minimap.img_player->height / 2);
 	return (EXIT_SUCCESS);

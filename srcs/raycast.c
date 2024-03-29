@@ -17,47 +17,77 @@ void fill_map(t_program *program, t_coord_int x, t_coord_int y, uint32_t color)
 	}
 }
 
-void fill_floor(t_program *program)
+void draw_background_no_cast(t_program *program)
 {
-	t_coord_int x;
-	t_coord_int y;
-
-	x.x = 0;
-	x.y = WIDTH - 1;
-	y.x = HEIGHT / 2;
-	y.y = HEIGHT - 1;
-	fill_map(program, x, y, program->map.floor.rgba);
+	(void)program;
 }
 
-void fill_ceiling(t_program *program)
+void draw_background(t_program *program)
 {
-	t_coord_int x;
-	t_coord_int y;
+	int y;
 
-	x.x = 0;
-	x.y = WIDTH - 1;
-	y.x = 0;
-	y.y = HEIGHT / 2 - 1;
-	fill_map(program, x, y, program->map.ceiling.rgba);
+	y = -1;
+	while (++y < HEIGHT)
+	{
+		bool is_floor = y > HEIGHT / 2 + program->player.pitch;
+		t_coord rayDirX;
+		t_coord rayDirY;
+		rayDirX.x = program->player.dir.x - program->player.plane.x;
+		rayDirX.y = program->player.dir.x + program->player.plane.x;
+		rayDirY.x = program->player.dir.y - program->player.plane.y;
+		rayDirY.y = program->player.dir.y + program->player.plane.y;
+
+		int p;
+		float camZ;
+
+		if (is_floor) {
+			p = y - HEIGHT / 2 - program->player.pitch;
+			camZ = 0.5 * HEIGHT + program->player.height;
+		}
+		else {
+			p = HEIGHT / 2 - y + program->player.pitch;
+			camZ = 0.5 * HEIGHT - program->player.height;
+		}
+		float rowDistance = camZ / p;
+		t_coord floorStep;
+		floorStep.x = rowDistance * (rayDirX.y - rayDirX.x) / WIDTH;
+		floorStep.y = rowDistance * (rayDirY.y - rayDirY.x) / WIDTH;
+		t_coord floor;
+		floor.x = program->player.pos.x + rowDistance * rayDirX.x;
+		floor.y = program->player.pos.y + rowDistance * rayDirY.x;
+		int x = -1;
+
+		while(++x < WIDTH)
+		{
+			t_coord_int cell;
+			cell.x = (int)(floor.x);
+			cell.y = (int)(floor.y);
+			t_coord_int t;
+			t.x = (int)(MAX_RES * (floor.x - cell.x)) & (MAX_RES - 1);
+			t.y = (int)(MAX_RES * (floor.y - cell.y)) & (MAX_RES - 1);
+			floor.x += floorStep.x;
+			floor.y += floorStep.y;
+			mlx_put_pixel(program->map.img, x, y, program->map.floor.rgba);
+			mlx_put_pixel(program->map.img, x, HEIGHT - y - 1, program->map.ceiling.rgba);
+		}
+	}
 }
 
-void draw(t_program *program)
+void draw_wall(t_program *program)
 {
 	int x;
 
 	x = -1;
-	fill_ceiling(program);
-	fill_floor(program);
 	while (++x < WIDTH)
 	{
 		t_coord rayDir;
-		double cameraX = 2 * x / (double)WIDTH - 1;
+		double cameraX = 2 * x / (double)(WIDTH) - 1;
 		rayDir.x = program->player.dir.x + program->player.plane.x * cameraX;
 		rayDir.y = program->player.dir.y + program->player.plane.y * cameraX;
 
 		t_coord_int map;
-		map.x = (int)program->player.pos.x;
-		map.y = (int)program->player.pos.y;
+		map.x = (int)(program->player.pos.x);
+		map.y = (int)(program->player.pos.y);
 
 		t_coord sideDist;
 		t_coord deltaDist;
@@ -124,10 +154,12 @@ void draw(t_program *program)
 		lineHeight = (int)(HEIGHT / perpWallDist);
 		int drawStart;
 		int drawEnd;
-		drawStart = -lineHeight / 2 + HEIGHT / 2;
+		int offset;
+		offset = program->player.pitch + (program->player.height / perpWallDist);
+		drawStart = -lineHeight / 2 + HEIGHT / 2 + offset;
 		if (drawStart < 0)
 			drawStart = 0;
-		drawEnd = lineHeight / 2 + HEIGHT / 2;
+		drawEnd = lineHeight / 2 + HEIGHT / 2 + offset;
 		if (drawEnd >= HEIGHT)
 			drawEnd = HEIGHT - 1;
 
@@ -154,26 +186,98 @@ void draw(t_program *program)
 		wallX -= floor(wallX);
 		t_coord_int tex;
 
-		tex.x = (int)(wallX * (double)(text->width));
+		tex.x = (int)(wallX * (double)(MAX_RES));
 		if (side == 0 && rayDir.x > 0)
-			tex.x = text->width - tex.x - 1;
+			tex.x = MAX_RES - tex.x - 1;
 		else if (side == 1 && rayDir.y < 0)
-			tex.x = text->width - tex.x - 1;
+			tex.x = MAX_RES - tex.x - 1;
 
 		double texStep;
 		double texPos;
 		int y;
 
-		texStep = 1.0 * text->height / lineHeight;
-		texPos = (drawStart - HEIGHT / 2 + lineHeight / 2) * texStep;
+		texStep = 1.0 * MAX_RES / lineHeight;
+		texPos = (drawStart - program->player.pitch - (program->player.height / perpWallDist) - HEIGHT / 2 + lineHeight / 2) * texStep;
+		/*
 		y = drawStart - 1;
 		while (++y < drawEnd)
 		{
-			tex.y = (int)(texPos) & (text->height - 1);
+			tex.y = (int)(texPos) & (MAX_RES - 1);
 			texPos += texStep;
-			uint32_t coord = (text->height * tex.y + tex.x) * 4;
+			uint32_t coord = (MAX_RES * tex.y + tex.x) * 4;
+			uint32_t color = get_color_rgba(text->pixels[coord], text->pixels[coord + 1], text->pixels[coord + 2], text->pixels[coord + 3]);
+			mlx_put_pixel(program->map.img, x, y, color);
+		}
+		*/
+
+		//draw floor
+		t_coord floorWall;
+		if (side == 0 && rayDir.x > 0)
+		{
+			floorWall.x = map.x;
+			floorWall.y = map.y + wallX;
+		}
+		else if (side == 0 && rayDir.x < 0)
+		{
+			floorWall.x = map.x + 1.0;
+			floorWall.y = map.y + wallX;
+		}
+		else if (side == 1 && rayDir.x > 0)
+		{
+			floorWall.x = map.x + wallX;
+			floorWall.y = map.y;
+		}
+		else
+		{
+			floorWall.x = map.x + wallX;
+			floorWall.y = map.y + 1.0;
+		}
+
+		double distWall;
+		double distPlayer;
+		double currentDist;
+		distWall = perpWallDist;
+		distPlayer = 0.0;
+		if (drawEnd < 0)
+			drawEnd = HEIGHT;
+		y = -1;
+		while(++y <= drawStart)
+		{
+			currentDist = (HEIGHT - (2.0 * program->player.height)) / (HEIGHT * 2.0 * (y - program->player.pitch));
+			double weight;
+			weight = (currentDist - distPlayer) / (distWall - distPlayer);
+			t_coord currentFloor;
+			currentFloor.x = weight * floorWall.x + (1.0 - weight) * program->player.pos.x;
+			currentFloor.y = weight * floorWall.y + (1.0 - weight) * program->player.pos.y;
+			mlx_put_pixel(program->map.img, x, y, program->map.ceiling.rgba);
+		}
+		y = drawEnd - 1;
+		while(++y < HEIGHT)
+		{
+			currentDist = (HEIGHT + (2.0 * program->player.height)) / (2.0 * (y - program->player.pitch) - HEIGHT);
+			double weight;
+			weight = (currentDist - distPlayer) / (distWall - distPlayer);
+			t_coord currentFloor;
+			currentFloor.x = weight * floorWall.x + (1.0 - weight) * program->player.pos.x;
+			currentFloor.y = weight * floorWall.y + (1.0 - weight) * program->player.pos.y;
+			mlx_put_pixel(program->map.img, x, y, program->map.floor.rgba);
+		}
+
+		y = drawStart - 1;
+		while (++y < drawEnd)
+		{
+			tex.y = (int)(texPos) & (MAX_RES - 1);
+			texPos += texStep;
+			uint32_t coord = (MAX_RES * tex.y + tex.x) * 4;
 			uint32_t color = get_color_rgba(text->pixels[coord], text->pixels[coord + 1], text->pixels[coord + 2], text->pixels[coord + 3]);
 			mlx_put_pixel(program->map.img, x, y, color);
 		}
 	}
+}
+
+void draw(t_program *program)
+{
+	//draw_background_no_cast(program);
+	//draw_background(program);
+	draw_wall(program);
 }
