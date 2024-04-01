@@ -12,24 +12,37 @@
 
 #include "cub3d.h"
 
+void play_land()
+{
+	system("paplay --volume=49152 sounds/Land.wav &");
+}
+
+void play_jump()
+{
+	system("paplay --volume=49152 sounds/Jump.wav &");
+}
+
+void play_walk(t_program *program)
+{
+	if (!program->player.moving && program->timer.footstep == 0)
+		return ;
+	if (program->player.moving && program->timer.footstep == 0)
+		system("timeout 0.2s paplay --volume=49152 sounds/Walk.wav &");
+	program->timer.footstep += program->mlx->delta_time;
+	if (program->timer.footstep >= 0.2)
+		program->timer.footstep = 0;
+}
+
 void play_background(t_program *program)
 {
-	int	status;
-
-	if (waitpid(program->music, &status, WNOHANG) != 0)
-	{
-		program->music = fork();
-
-		if (program->music == 0)
-		{
-			execlp("paplay", "paplay", "--volume=49152", "sounds/Background.wav", NULL);
-			free(program->filename);
-			ft_freesplit(program->map.content);
-		}
-	}
+	if (program->timer.music == 0)
+		system("paplay --volume=32768 sounds/Background.wav &");
+	program->timer.music += program->mlx->delta_time;
+	if (program->timer.music >= MUSIC_LENGTH)
+		program->timer.music = 0;
 }
 
 void play_gun()
 {
-	system("paplay --volume=13107 sounds/Gun.wav &");
+	system("paplay --volume=16384 sounds/Gun.wav &");
 }

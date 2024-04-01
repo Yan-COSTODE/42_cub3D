@@ -41,15 +41,16 @@
 # define ROTATE_SPEED 4.5
 # define PITCH_SPEED 1500.0
 # define PITCH_LIMIT 200
-# define JUMP_FORCE 1500.0
-# define JUMP_MAX 300
-# define GRAVITY_FORCE 1500.0
+# define JUMP_FORCE 1100.0
+# define JUMP_MAX 380
+# define GRAVITY_FORCE 1100.0
 # define CROUCH_FORCE 500.0
 # define CROUCH_MAX -200
 # define CROSSHAIR 32
 # define ANIM_DELAY 0.05
 # define MAX_BOBBING 50
 # define BIG 1e30
+# define MUSIC_LENGTH 3 * 60 + 28
 
 // LIBFT
 size_t ft_strlen(const char *s);
@@ -100,6 +101,9 @@ void show_shoot_frame(t_program *program);
 
 // SOUND
 void play_background(t_program *program);
+void play_walk(t_program *program);
 void play_gun();
+void play_jump();
+void play_land();
 
 #endif

@@ -42,7 +42,10 @@ void	init_program(t_program *program)
 	program->hud.direction = -1.5;
 	program->hud.gindex = 0;
 	program->hud.shoot = false;
-	program->music = 0;
+	program->timer.music = 0;
+	program->timer.footstep = 0;
+	program->timer.gun = 0;
+	program->player.moving = false;
 }
 
 void	on_destroy(t_program *program)
@@ -50,7 +53,7 @@ void	on_destroy(t_program *program)
 	free(program->filename);
 	ft_freesplit(program->map.content);
 	mlx_close_window(program->mlx);
-	kill(program->music, SIGTERM);
+	system("killall paplay");
 }
 
 void	parse_to(t_program *program, mlx_image_t **image, char *path, int width, int height)
@@ -113,6 +116,7 @@ void	update(void *param)
 	draw(program);
 	draw_minimap(program);
 	play_background(program);
+	play_walk(program);
 	mlx_set_cursor_mode(program->mlx, program->cursor);
 }
 

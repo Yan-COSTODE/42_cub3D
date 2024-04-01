@@ -17,6 +17,7 @@ void move_up(t_program *program, double move_speed)
 	int x;
 	int y;
 
+	program->player.moving = true;
 	x = program->player.pos.x + program->player.dir.x * move_speed;
 	y = program->player.pos.y + program->player.dir.y * move_speed;
 
@@ -31,6 +32,7 @@ void move_down(t_program *program, double move_speed)
 	int x;
 	int y;
 
+	program->player.moving = true;
 	x = program->player.pos.x - program->player.dir.x * move_speed;
 	y = program->player.pos.y - program->player.dir.y * move_speed;
 
@@ -45,6 +47,7 @@ void move_right(t_program *program, double move_speed)
 	int x;
 	int y;
 
+	program->player.moving = true;
 	x = program->player.pos.x + program->player.dir.y * move_speed;
 	y = program->player.pos.y - program->player.dir.x * move_speed;
 
@@ -59,6 +62,7 @@ void move_left(t_program *program, double move_speed)
 	int x;
 	int y;
 
+	program->player.moving = true;
 	x = program->player.pos.x - program->player.dir.y * move_speed;
 	y = program->player.pos.y + program->player.dir.x * move_speed;
 
@@ -144,6 +148,7 @@ void jump(t_program *program)
 		{
 			program->player.height = JUMP_MAX;
 			program->player.jump = false;
+			play_land();
 		}
 	}
 	else if (program->player.height > 0)
@@ -156,7 +161,10 @@ void jump(t_program *program)
 	if (!mlx_is_key_down(program->mlx, MLX_KEY_SPACE))
 		return ;
 	if (program->player.height == 0 && !program->player.jump && !program->player.crouch)
+	{
 		program->player.jump = true;
+		play_jump();
+	}
 }
 
 void crouch(t_program *program)
@@ -191,6 +199,7 @@ void move(t_program *program)
 {
 	double move_speed;
 
+	program->player.moving = false;
 	if (program->player.sprint)
 		move_speed = program->mlx->delta_time * SPRINT_SPEED;
 	else if (program->player.crouch)

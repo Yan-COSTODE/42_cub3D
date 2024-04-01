@@ -30,8 +30,8 @@ void shoot_timer(t_program *program)
 {
 	if (program->hud.shoot)
 	{
-		program->hud.timer += program->mlx->delta_time;
-		if (program->hud.timer >= ANIM_DELAY)
+		program->timer.gun += program->mlx->delta_time;
+		if (program->timer.gun >= ANIM_DELAY)
 		{
 			++program->hud.gindex;
 			if (program->hud.gindex == 1)
@@ -41,7 +41,7 @@ void shoot_timer(t_program *program)
 				program->hud.gindex = 0;
 				program->hud.shoot = false;
 			}
-			program->hud.timer = 0;
+			program->timer.gun = 0;
 		}
 	}
 }
@@ -80,6 +80,6 @@ void shoot(t_program *program, bool try)
 	if (try && !program->hud.shoot)
 	{
 		program->hud.shoot = true;
-		program->hud.timer = 0;
+		program->timer.gun = 0;
 	}
 }
