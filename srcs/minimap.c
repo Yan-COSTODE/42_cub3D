@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minimap.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ycostode <ycostode@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/03/28 20:27:56 by ycostode          #+#    #+#             */
+/*   Updated: 2024/03/28 20:27:56 by ycostode         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub3d.h"
 
 void fill_minimap(t_program *program, t_coord_int x, t_coord_int y, uint32_t color)
@@ -32,12 +44,6 @@ void fill_display(t_program *program, t_coord_int x, t_coord_int y, uint32_t col
 		}
 		++index.x;
 	}
-}
-
-uint32_t get_color_image(mlx_image_t* img, int x, int y)
-{
-	uint32_t coord = (img->height * y + x) * 4;
-	return(get_color_rgba(img->pixels[coord], img->pixels[coord + 1], img->pixels[coord + 2], img->pixels[coord + 3]));
 }
 
 uint32_t bilinearInterp(mlx_image_t* image, double xP, double yP)

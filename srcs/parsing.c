@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parsing.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ycostode <ycostode@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/03/28 21:01:12 by ycostode          #+#    #+#             */
+/*   Updated: 2024/03/28 21:01:12 by ycostode         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub3d.h"
 
 void close_file(t_program *program)
@@ -45,6 +57,8 @@ void	parse_image(t_program *program, int *status, mlx_image_t** image, char **ar
 	mlx_texture_t *tex;
 	char *tmp;
 
+	if (!image)
+		return ;
 	if (ft_strlen_split(args) == 2)
 	{
 		tmp = ft_substr(args[1], 0, ft_strchr(args[1], '\n') - args[1]);
@@ -57,7 +71,7 @@ void	parse_image(t_program *program, int *status, mlx_image_t** image, char **ar
 		}
 		free(tmp);
 	}
-	if (ft_strlen_split(args) != 2 || !image || !*image)
+	if (ft_strlen_split(args) != 2 || !*image)
 		return (parse_error(status, args[0]));
 }
 

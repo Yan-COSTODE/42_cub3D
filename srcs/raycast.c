@@ -1,77 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   raycast.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ycostode <ycostode@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/03/29 13:32:29 by ycostode          #+#    #+#             */
+/*   Updated: 2024/03/29 13:32:29 by ycostode         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub3d.h"
-
-void fill_map(t_program *program, t_coord_int x, t_coord_int y, uint32_t color)
-{
-	t_coord_int index;
-
-	index.x = x.x;
-	while (index.x <= x.y)
-	{
-		index.y = y.x;
-		while (index.y <= y.y)
-		{
-			mlx_put_pixel(program->map.img, index.x, index.y, color);
-			++index.y;
-		}
-		++index.x;
-	}
-}
-
-void draw_background_no_cast(t_program *program)
-{
-	(void)program;
-}
-
-void draw_background(t_program *program)
-{
-	int y;
-
-	y = -1;
-	while (++y < HEIGHT)
-	{
-		bool is_floor = y > HEIGHT / 2 + program->player.pitch;
-		t_coord rayDirX;
-		t_coord rayDirY;
-		rayDirX.x = program->player.dir.x - program->player.plane.x;
-		rayDirX.y = program->player.dir.x + program->player.plane.x;
-		rayDirY.x = program->player.dir.y - program->player.plane.y;
-		rayDirY.y = program->player.dir.y + program->player.plane.y;
-
-		int p;
-		float camZ;
-
-		if (is_floor) {
-			p = y - HEIGHT / 2 - program->player.pitch;
-			camZ = 0.5 * HEIGHT + program->player.height;
-		}
-		else {
-			p = HEIGHT / 2 - y + program->player.pitch;
-			camZ = 0.5 * HEIGHT - program->player.height;
-		}
-		float rowDistance = camZ / p;
-		t_coord floorStep;
-		floorStep.x = rowDistance * (rayDirX.y - rayDirX.x) / WIDTH;
-		floorStep.y = rowDistance * (rayDirY.y - rayDirY.x) / WIDTH;
-		t_coord floor;
-		floor.x = program->player.pos.x + rowDistance * rayDirX.x;
-		floor.y = program->player.pos.y + rowDistance * rayDirY.x;
-		int x = -1;
-
-		while(++x < WIDTH)
-		{
-			t_coord_int cell;
-			cell.x = (int)(floor.x);
-			cell.y = (int)(floor.y);
-			t_coord_int t;
-			t.x = (int)(MAX_RES * (floor.x - cell.x)) & (MAX_RES - 1);
-			t.y = (int)(MAX_RES * (floor.y - cell.y)) & (MAX_RES - 1);
-			floor.x += floorStep.x;
-			floor.y += floorStep.y;
-			mlx_put_pixel(program->map.img, x, y, program->map.floor.rgba);
-			mlx_put_pixel(program->map.img, x, HEIGHT - y - 1, program->map.ceiling.rgba);
-		}
-	}
-}
 
 void draw_wall(t_program *program)
 {
@@ -277,7 +216,5 @@ void draw_wall(t_program *program)
 
 void draw(t_program *program)
 {
-	//draw_background_no_cast(program);
-	//draw_background(program);
 	draw_wall(program);
 }

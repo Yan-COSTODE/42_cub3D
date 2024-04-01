@@ -98,4 +98,8 @@ void draw(t_program *program);
 void draw_minimap(t_program *program);
 void show_shoot_frame(t_program *program);
 
+// SOUND
+void play_background(t_program *program);
+void play_gun();
+
 #endif

@@ -12,6 +12,7 @@
 
 #ifndef STRUCT_H
 # define STRUCT_H
+# include <sys/wait.h>
 
 typedef struct s_coord_int
 {
@@ -39,8 +40,8 @@ typedef struct s_hud
 	mlx_image_t *crosshair;
 	mlx_image_t *gun[4];
 	int gindex;
-	int bobbing;
-	int direction;
+	double bobbing;
+	double direction;
 	double timer;
 	bool shoot;
 }	t_hud;
@@ -90,6 +91,7 @@ typedef struct s_program
 	int		fd;
 	int		exit_value;
 	enum mouse_mode cursor;
+	pid_t music;
 }			t_program;
 
 #endif

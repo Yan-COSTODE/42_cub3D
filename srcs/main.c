@@ -1,21 +1,33 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ycostode <ycostode@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/04/01 12:28:57 by ycostode          #+#    #+#             */
+/*   Updated: 2024/04/01 12:28:57 by ycostode         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub3d.h"
 
-void change_cursor(mouse_key_t button, action_t action, modifier_key_t mods, void *param)
+void	change_cursor(mouse_key_t button, action_t action, modifier_key_t mods, void *param)
 {
-	t_program *program;
+	t_program	*program;
 
 	(void)mods;
 	program = param;
 	shoot(program, button == MLX_MOUSE_BUTTON_LEFT && action == MLX_PRESS);
 	if (button != MLX_MOUSE_BUTTON_RIGHT || action != MLX_PRESS)
-		return;
+		return ;
 	if (program->cursor == MLX_MOUSE_HIDDEN)
 		program->cursor = MLX_MOUSE_NORMAL;
 	else if (program->cursor == MLX_MOUSE_NORMAL)
 		program->cursor = MLX_MOUSE_HIDDEN;
 }
 
-void init_program(t_program *program)
+void	init_program(t_program *program)
 {
 	program->exit_value = 0;
 	program->map.height = 0;
@@ -27,21 +39,23 @@ void init_program(t_program *program)
 	program->player.height = 0;
 	program->cursor = MLX_MOUSE_HIDDEN;
 	program->hud.bobbing = MAX_BOBBING;
-	program->hud.direction = -1;
+	program->hud.direction = -1.5;
 	program->hud.gindex = 0;
 	program->hud.shoot = false;
+	program->music = 0;
 }
 
-void on_destroy(t_program *program)
+void	on_destroy(t_program *program)
 {
 	free(program->filename);
 	ft_freesplit(program->map.content);
 	mlx_close_window(program->mlx);
+	kill(program->music, SIGTERM);
 }
 
-void parse_to(t_program *program, mlx_image_t** image, char *path, int width, int height)
+void	parse_to(t_program *program, mlx_image_t **image, char *path, int width, int height)
 {
-	mlx_texture_t *tmp;
+	mlx_texture_t	*tmp;
 
 	tmp = mlx_load_png(path);
 	if (tmp)
@@ -54,7 +68,7 @@ void parse_to(t_program *program, mlx_image_t** image, char *path, int width, in
 		*image = NULL;
 }
 
-void parse_const(t_program *program)
+void	parse_const(t_program *program)
 {
 	parse_to(program, &program->minimap.img_player, "./textures/player.png", MINIMAP_PLAYER, MINIMAP_PLAYER);
 	parse_to(program, &program->hud.crosshair, "./textures/crosshair.png", CROSSHAIR, CROSSHAIR);
@@ -65,7 +79,7 @@ void parse_const(t_program *program)
 	setup_shoot(program);
 }
 
-int start(t_program *program)
+int	start(t_program *program)
 {
 	init_program(program);
 	program->mlx = mlx_init(WIDTH, HEIGHT, "cub3D", false);
@@ -87,7 +101,7 @@ int start(t_program *program)
 	return (EXIT_SUCCESS);
 }
 
-void update(void *param)
+void	update(void *param)
 {
 	t_program	*program;
 
@@ -98,12 +112,13 @@ void update(void *param)
 	rotate(program);
 	draw(program);
 	draw_minimap(program);
+	play_background(program);
 	mlx_set_cursor_mode(program->mlx, program->cursor);
 }
 
-int main(int argc, char **argv)
+int	main(int argc, char **argv)
 {
-	t_program program;
+	t_program	program;
 
 	(void)argv;
 	if (argc != 2)

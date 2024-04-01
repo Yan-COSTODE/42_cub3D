@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   shoot.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ycostode <ycostode@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/03/29 16:13:24 by ycostode          #+#    #+#             */
+/*   Updated: 2024/03/29 16:13:24 by ycostode         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub3d.h"
 
 void setup_shoot(t_program *program)
@@ -22,6 +34,8 @@ void shoot_timer(t_program *program)
 		if (program->hud.timer >= ANIM_DELAY)
 		{
 			++program->hud.gindex;
+			if (program->hud.gindex == 1)
+				play_gun();
 			if (program->hud.gindex > 3)
 			{
 				program->hud.gindex = 0;
