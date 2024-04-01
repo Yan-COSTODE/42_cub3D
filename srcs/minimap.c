@@ -105,12 +105,12 @@ void rotate_minimap(t_program *program)
 			double transY = y - MINIMAP_SIZE / 2;
 			double rotatedX = transX * xRot.x + transY * xRot.y;
 			double rotatedY = transX * yRot.x + transY * yRot.y;
-			rotatedX += MINIMAP_SIZE;
-			rotatedY += MINIMAP_SIZE / 2 + MINIMAP_CELL * 5;
+			rotatedX += MINIMAP_SIZE + MINIMAP_CELL * 5;
+			rotatedY += MINIMAP_SIZE / 2 + MINIMAP_CELL * 10;
 			rotatedX = round(rotatedX);
 			rotatedY = round(rotatedY);
 
-			if (0 <= rotatedY && rotatedY < (MINIMAP_SIZE * 2) && 0 <= rotatedX && rotatedX < (MINIMAP_SIZE * 2))
+			if (0 <= rotatedY && rotatedY < program->minimap.img->height && 0 <= rotatedX && rotatedX < program->minimap.img->width)
 			{
 				uint32_t pixel = bilinearInterp(program->minimap.img, rotatedX, rotatedY);
 				mlx_put_pixel(program->minimap.display, x, y, pixel);
@@ -133,20 +133,21 @@ void draw_minimap(t_program *program)
 	y.x = 0;
 	y.y = MINIMAP_SIZE - 1;
 	fill_display(program, x, y, get_color_rgba(47, 53, 66, 255 / 4));
-	y.y = MINIMAP_SIZE * 2 - 1;
+	x.y = MINIMAP_SIZE * 3 - 1;
+	y.y = MINIMAP_SIZE * 3 - 1;
 	fill_minimap(program, x, y, get_color_rgba(47, 53, 66, 255 / 4));
 	player.x = (int)(program->player.pos.x);
 	diff.x = program->player.pos.x - player.x;
 	player.y = (int)(program->map.height - program->player.pos.y);
 	diff.y = (program->map.height - program->player.pos.y) - player.y;
 	index.x = -1;
-	while (++index.x < MINIMAP_CELLS * 2)
+	while (++index.x < MINIMAP_CELLS * 3)
 	{
 		index.y = -1;
-		while (++index.y < MINIMAP_CELLS * 2)
+		while (++index.y < MINIMAP_CELLS * 3)
 		{
-			comp.x = player.x - MINIMAP_CELLS + index.x;
-			comp.y = player.y - MINIMAP_CELLS + index.y;
+			comp.x = player.x - MINIMAP_CELLS * 1.5 + index.x;
+			comp.y = player.y - MINIMAP_CELLS * 1.5 + index.y;
 			if (comp.x < 0 || comp.x > program->map.width - 1 || comp.y < 0 || comp.y > program->map.height - 1)
 				continue;
 			x.x = index.x * MINIMAP_CELL - diff.x * MINIMAP_CELL;

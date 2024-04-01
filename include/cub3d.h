@@ -42,7 +42,7 @@
 # define PITCH_SPEED 1500.0
 # define PITCH_LIMIT 200
 # define JUMP_FORCE 1100.0
-# define JUMP_MAX 380
+# define JUMP_MAX 350
 # define GRAVITY_FORCE 1100.0
 # define CROUCH_FORCE 500.0
 # define CROUCH_MAX -200
@@ -100,8 +100,7 @@ void draw_minimap(t_program *program);
 void show_shoot_frame(t_program *program);
 
 // SOUND
-void play_background(t_program *program);
-void play_walk(t_program *program);
+void update_sound(t_program *program);
 void play_gun();
 void play_jump();
 void play_land();

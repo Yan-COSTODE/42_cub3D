@@ -39,12 +39,13 @@ void	init_program(t_program *program)
 	program->player.height = 0;
 	program->cursor = MLX_MOUSE_HIDDEN;
 	program->hud.bobbing = MAX_BOBBING;
-	program->hud.direction = -1.5;
+	program->hud.direction = -0.65;
 	program->hud.gindex = 0;
 	program->hud.shoot = false;
 	program->timer.music = 0;
 	program->timer.footstep = 0;
 	program->timer.gun = 0;
+	program->timer.breath = 0;
 	program->player.moving = false;
 }
 
@@ -92,7 +93,7 @@ int	start(t_program *program)
 	if (program->exit_value == EXIT_FAILURE)
 		return (EXIT_FAILURE);
 	program->map.img = mlx_new_image(program->mlx, WIDTH, HEIGHT);
-	program->minimap.img = mlx_new_image(program->mlx, MINIMAP_SIZE * 2, MINIMAP_SIZE * 2);
+	program->minimap.img = mlx_new_image(program->mlx, MINIMAP_SIZE * 3, MINIMAP_SIZE * 3);
 	program->minimap.display = mlx_new_image(program->mlx, MINIMAP_SIZE * 2, MINIMAP_SIZE);
 	mlx_image_to_window(program->mlx, program->map.img, 0, 0);
 	parse_const(program);
@@ -115,8 +116,7 @@ void	update(void *param)
 	rotate(program);
 	draw(program);
 	draw_minimap(program);
-	play_background(program);
-	play_walk(program);
+	update_sound(program);
 	mlx_set_cursor_mode(program->mlx, program->cursor);
 }
 

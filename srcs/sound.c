@@ -33,6 +33,15 @@ void play_walk(t_program *program)
 		program->timer.footstep = 0;
 }
 
+void play_breath(t_program *program)
+{
+	if (program->timer.breath == 0)
+		system("timeout 2.5s paplay --volume=21626 sounds/Breathing.wav &");
+	program->timer.breath += program->mlx->delta_time;
+	if (program->timer.breath >= 3)
+		program->timer.breath = 0;
+}
+
 void play_background(t_program *program)
 {
 	if (program->timer.music == 0)
@@ -45,4 +54,11 @@ void play_background(t_program *program)
 void play_gun()
 {
 	system("paplay --volume=16384 sounds/Gun.wav &");
+}
+
+void update_sound(t_program *program)
+{
+	play_background(program);
+	play_walk(program);
+	play_breath(program);
 }

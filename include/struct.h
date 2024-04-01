@@ -84,6 +84,7 @@ typedef struct s_timer
 	double gun;
 	double music;
 	double footstep;
+	double breath;
 }	t_timer;
 
 typedef struct s_program
