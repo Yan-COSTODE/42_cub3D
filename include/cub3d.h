@@ -35,12 +35,12 @@
 # define MINIMAP_SIZE MINIMAP_CELL * MINIMAP_CELLS
 # define MINIMAP_OFFSET 16
 # define MINIMAP_PLAYER 8
-# define CROUCH_SPEED 2.0
-# define MOVE_SPEED 6.0
-# define SPRINT_SPEED 10.0
-# define ROTATE_SPEED 4.5
-# define PITCH_SPEED 1500.0
-# define PITCH_LIMIT 200
+# define CROUCH_SPEED 1.5
+# define MOVE_SPEED 3.0
+# define SPRINT_SPEED 5.0
+# define ROTATE_SPEED 2.0
+# define PITCH_SPEED 1000.0
+# define PITCH_LIMIT 300
 # define JUMP_FORCE 1100.0
 # define JUMP_MAX 350
 # define GRAVITY_FORCE 1100.0
@@ -51,6 +51,10 @@
 # define MAX_BOBBING 50
 # define BIG 1e30
 # define MUSIC_LENGTH 3 * 60 + 28
+# define RED_MASK 0xFF000000
+# define GREEN_MASK 0x00FF0000
+# define BLUE_MASK 0x0000FF00
+# define ALPHA_MASK 0x000000FF
 
 // LIBFT
 size_t ft_strlen(const char *s);
@@ -68,6 +72,7 @@ char	*ft_substr(char const *s, unsigned int start, size_t len);
 char	**ft_split(char const *s, char c);
 bool	atoi_convert(const char *s, unsigned char *n);
 char	*ft_strdup(const char *s);
+char	**ft_strdup_split(char **s);
 
 // PRINT
 void print_fd_char(int fd, const char msg);

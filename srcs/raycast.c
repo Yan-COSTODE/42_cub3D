@@ -12,6 +12,29 @@
 
 #include "cub3d.h"
 
+uint32_t set_fog(uint32_t original, double scale)
+{
+	t_color fog_color;
+	t_color color;
+	uint8_t elem;
+
+	if (scale > 1)
+		scale = 1;
+	else if (scale < 0)
+		scale = 0;
+
+	fog_color.r = 0;
+	fog_color.g = 0;
+	fog_color.b = 0;
+	elem = (original & RED_MASK) >> 24;
+	color.r = fog_color.r * scale + elem * (1 - scale);
+	elem = (original & GREEN_MASK) >> 16;
+	color.g = fog_color.g * scale + elem * (1 - scale);
+	elem = (original & BLUE_MASK) >> 8;
+	color.b = fog_color.b * scale + elem * (1 - scale);
+	return (get_color_rgba(color.r, color.g, color.b, 255));
+}
+
 void draw_wall(t_program *program)
 {
 	int x;
@@ -80,7 +103,7 @@ void draw_wall(t_program *program)
 				map.y += step.y;
 				side = 1;
 			}
-			if (get_at(program->map, map.x, program->map.height - (map.y + 1)) == '1')
+			if (get_at(program->map, map.x, map.y) == '1')
 				hit = 1;
 		}
 
@@ -137,17 +160,6 @@ void draw_wall(t_program *program)
 
 		texStep = 1.0 * MAX_RES / lineHeight;
 		texPos = (drawStart - program->player.pitch - (program->player.height / perpWallDist) - HEIGHT / 2 + lineHeight / 2) * texStep;
-		/*
-		y = drawStart - 1;
-		while (++y < drawEnd)
-		{
-			tex.y = (int)(texPos) & (MAX_RES - 1);
-			texPos += texStep;
-			uint32_t coord = (MAX_RES * tex.y + tex.x) * 4;
-			uint32_t color = get_color_rgba(text->pixels[coord], text->pixels[coord + 1], text->pixels[coord + 2], text->pixels[coord + 3]);
-			mlx_put_pixel(program->map.img, x, y, color);
-		}
-		*/
 
 		//draw floor
 		t_coord floorWall;
@@ -182,24 +194,16 @@ void draw_wall(t_program *program)
 		y = -1;
 		while(++y <= drawStart)
 		{
-			currentDist = (HEIGHT - (2.0 * program->player.height)) / (HEIGHT * 2.0 * (y - program->player.pitch));
-			double weight;
-			weight = (currentDist - distPlayer) / (distWall - distPlayer);
-			t_coord currentFloor;
-			currentFloor.x = weight * floorWall.x + (1.0 - weight) * program->player.pos.x;
-			currentFloor.y = weight * floorWall.y + (1.0 - weight) * program->player.pos.y;
-			mlx_put_pixel(program->map.img, x, y, program->map.ceiling.rgba);
+			currentDist = (HEIGHT - (2.0 * program->player.height)) / (HEIGHT - 2.0 * (y - program->player.pitch));
+			uint32_t color = set_fog(program->map.ceiling.rgba, currentDist / 2);
+			mlx_put_pixel(program->map.img, x, y, color);
 		}
 		y = drawEnd - 1;
 		while(++y < HEIGHT)
 		{
 			currentDist = (HEIGHT + (2.0 * program->player.height)) / (2.0 * (y - program->player.pitch) - HEIGHT);
-			double weight;
-			weight = (currentDist - distPlayer) / (distWall - distPlayer);
-			t_coord currentFloor;
-			currentFloor.x = weight * floorWall.x + (1.0 - weight) * program->player.pos.x;
-			currentFloor.y = weight * floorWall.y + (1.0 - weight) * program->player.pos.y;
-			mlx_put_pixel(program->map.img, x, y, program->map.floor.rgba);
+			uint32_t color = set_fog(program->map.floor.rgba, currentDist / 2);
+			mlx_put_pixel(program->map.img, x, y, color);
 		}
 
 		y = drawStart - 1;
@@ -207,8 +211,9 @@ void draw_wall(t_program *program)
 		{
 			tex.y = (int)(texPos) & (MAX_RES - 1);
 			texPos += texStep;
-			uint32_t coord = (MAX_RES * tex.y + tex.x) * 4;
+			uint32_t coord = (MAX_RES * tex.y + (MAX_RES - tex.x)) * 4;
 			uint32_t color = get_color_rgba(text->pixels[coord], text->pixels[coord + 1], text->pixels[coord + 2], text->pixels[coord + 3]);
+			color = set_fog(color, perpWallDist / 2.3);
 			mlx_put_pixel(program->map.img, x, y, color);
 		}
 	}

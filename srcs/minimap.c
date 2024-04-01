@@ -85,7 +85,7 @@ uint32_t bilinearInterp(mlx_image_t* image, double xP, double yP)
 
 void rotate_minimap(t_program *program)
 {
-	double angle = atan2(program->player.dir.y, program->player.dir.x) - M_PI / 2;
+	double angle = atan2(program->player.dir.y, -program->player.dir.x) + M_PI / 2;
 
 	t_coord xRot;
 	t_coord yRot;
@@ -139,7 +139,7 @@ void draw_minimap(t_program *program)
 	player.x = (int)(program->player.pos.x);
 	diff.x = program->player.pos.x - player.x;
 	player.y = (int)(program->map.height - program->player.pos.y);
-	diff.y = (program->map.height - program->player.pos.y) - player.y;
+	diff.y = program->player.pos.y - player.y;
 	index.x = -1;
 	while (++index.x < MINIMAP_CELLS * 3)
 	{
@@ -160,8 +160,12 @@ void draw_minimap(t_program *program)
 				y.x = 0;
 			if (get_at(program->map, comp.x, comp.y) == '1')
 				fill_minimap(program, x, y, get_color_rgba(241, 242, 246, 255));
-			else if (get_at(program->map, comp.x, comp.y) != ' ')
+			else if (get_at(program->map, comp.x, comp.y) == ' ')
+				;
+			else if (get_at(program->map, comp.x, comp.y) == '0')
 				fill_minimap(program, x, y, get_color_rgba(47, 53, 66, 255));
+			else
+				fill_minimap(program, x, y, get_color_rgba(223, 228, 234, 255));
 		}
 	}
 	rotate_minimap(program);

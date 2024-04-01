@@ -76,6 +76,21 @@ char	*ft_strdup(const char *s)
 	return (ptr);
 }
 
+char	**ft_strdup_split(char **s)
+{
+	char	**ptr;
+	int i;
+
+	ptr = (char **)ft_calloc(ft_strlen_split(s) + 1, sizeof(char*));
+	if (!ptr)
+		return (NULL);
+	i = -1;
+	while (s[++i])
+		ptr[i] = ft_strdup(s[i]);
+	ptr[i] = NULL;
+	return (ptr);
+}
+
 char	*ft_strchr(const char *s, int c)
 {
 	int				i;

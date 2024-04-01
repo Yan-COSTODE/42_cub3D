@@ -39,7 +39,7 @@ void	init_program(t_program *program)
 	program->player.height = 0;
 	program->cursor = MLX_MOUSE_HIDDEN;
 	program->hud.bobbing = MAX_BOBBING;
-	program->hud.direction = -0.65;
+	program->hud.direction = -0.9;
 	program->hud.gindex = 0;
 	program->hud.shoot = false;
 	program->timer.music = 0;

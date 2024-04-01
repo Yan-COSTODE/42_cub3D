@@ -187,27 +187,27 @@ void set_player_orientation(t_program *program)
 	if (program->player.orientation == 'N')
 	{
 		program->player.dir.x = 0;
-		program->player.dir.y = 1;
+		program->player.dir.y = -1;
 		program->player.plane.x = 1;
 		program->player.plane.y = 0;
 	}
 	else if (program->player.orientation == 'S')
 	{
 		program->player.dir.x = 0;
-		program->player.dir.y = -1;
-		program->player.plane.x = -1;
+		program->player.dir.y = 1;
+		program->player.plane.x = 1;
 		program->player.plane.y = 0;
 	}
 	else if (program->player.orientation == 'E')
 	{
-		program->player.dir.x = 1;
+		program->player.dir.x = -1;
 		program->player.dir.y = 0;
 		program->player.plane.x = 0;
-		program->player.plane.y = -1;
+		program->player.plane.y = 1;
 	}
 	else if (program->player.orientation == 'W')
 	{
-		program->player.dir.x = -1;
+		program->player.dir.x = 1;
 		program->player.dir.y = 0;
 		program->player.plane.x = 0;
 		program->player.plane.y = 1;
@@ -272,7 +272,13 @@ void	fill_width(t_program *program)
 	}
 }
 
-// TODO check if the map is valid, closed by walls and no random char
+void parse_door(t_program *program)
+{
+	char **map;
+
+	map = ft_strdup_split(program->map.content);
+	ft_freesplit(map);
+}
 
 void parse(t_program *program)
 {
@@ -411,7 +417,10 @@ int	parsing(t_program *program)
 			x++;
 			if (program->map.content[y][x] == 'N' || program->map.content[y][x] == 'S'
 				|| program->map.content[y][x] == 'W' || program->map.content[y][x] == 'E')
-					player++;
+			{
+				player++;
+				set_at(&program->map, x, y, '0');
+			}
 		}
 		y++;
 	}
@@ -425,5 +434,6 @@ int	parsing(t_program *program)
 		print_error("No spawn point has been set");
 		return (0);
 	}
+	parse_door(program);
 	return (1);
 }

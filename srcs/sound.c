@@ -36,9 +36,9 @@ void play_walk(t_program *program)
 void play_breath(t_program *program)
 {
 	if (program->timer.breath == 0)
-		system("timeout 2.5s paplay --volume=21626 sounds/Breathing.wav &");
+		system("timeout 2.5s paplay --volume=49152 sounds/Breathing.wav &");
 	program->timer.breath += program->mlx->delta_time;
-	if (program->timer.breath >= 3)
+	if (program->timer.breath >= 3.1)
 		program->timer.breath = 0;
 }
 
