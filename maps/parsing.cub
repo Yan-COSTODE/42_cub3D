@@ -1,7 +1,7 @@
-NO ./textures/cyan.png
-SO ./textures/pink.png
-WE ./textures/yellow.png
-EA ./textures/black.png
+NO ./textures/1.png
+SO ./textures/5.png
+WE ./textures/8.png
+EA ./textures/15.png
 
 
 F 50,50,50

@@ -55,7 +55,6 @@ void	on_destroy(t_program *program)
 	ft_freesplit(program->map.content);
 	mlx_close_window(program->mlx);
 	system("killall paplay");
-	mlx_terminate(program->mlx);
 }
 
 void	parse_to(t_program *program, mlx_image_t **image, char *path, int width, int height)
@@ -77,10 +76,10 @@ void	parse_const(t_program *program)
 {
 	parse_to(program, &program->minimap.img_player, "./textures/player.png", MINIMAP_PLAYER, MINIMAP_PLAYER);
 	parse_to(program, &program->hud.crosshair, "./textures/crosshair.png", CROSSHAIR, CROSSHAIR);
-	parse_to(program, &program->hud.gun[0], "./textures/gun_0.png", 399, 288);
-	parse_to(program, &program->hud.gun[1], "./textures/gun_1.png", 399, 288);
-	parse_to(program, &program->hud.gun[2], "./textures/gun_2.png", 399, 288);
-	parse_to(program, &program->hud.gun[3], "./textures/gun_3.png", 399, 288);
+	parse_to(program, &program->hud.gun[0], "./textures/gun_0.png", 133 * 4, 96 * 4);
+	parse_to(program, &program->hud.gun[1], "./textures/gun_1.png", 133 * 4, 96 * 4);
+	parse_to(program, &program->hud.gun[2], "./textures/gun_2.png", 133 * 4, 96 * 4);
+	parse_to(program, &program->hud.gun[3], "./textures/gun_3.png", 133 * 4, 96 * 4);
 	setup_shoot(program);
 }
 
@@ -130,10 +129,13 @@ int	main(int argc, char **argv)
 		return (print_error("cub3D: Wrong Number of Arguments"));
 	program.filename = ft_strdup(argv[1]);
 	if (start(&program) == EXIT_FAILURE)
+	{
+		on_destroy(&program);
 		return (EXIT_FAILURE);
+	}
 	if (!parsing(&program))
 	{
-		on_destroy((void *)&program);
+		on_destroy(&program);
 		return (EXIT_FAILURE);
 	}
 	print_map(program.map);
@@ -141,5 +143,6 @@ int	main(int argc, char **argv)
 	mlx_mouse_hook(program.mlx, change_cursor, &program);
 	mlx_loop_hook(program.mlx, update, &program);
 	mlx_loop(program.mlx);
+	mlx_terminate(program.mlx);
 	return (EXIT_SUCCESS);
 }
