@@ -46,41 +46,22 @@ void fill_display(t_program *program, t_coord_int x, t_coord_int y, uint32_t col
 	}
 }
 
-uint32_t bilinearInterp(mlx_image_t* image, double xP, double yP)
+uint32_t get_pixel(mlx_image_t* image, double xP, double yP)
 {
-	t_coord_int x;
-	t_coord_int y;
+	t_coord_int coord;
 
-	x.x = (int)(xP);
-	x.y = x.x + 1;
-	y.x = (int)(yP);
-	y.y = y.x + 1;
+	coord.x = (int)(xP);
+	coord.y = (int)(yP);
 
-	t_coord d;
-	d.x = xP - x.x;
-	d.y = yP - y.y;
+	coord.x = fmax(0, fmin(coord.x, image->width - 1));
+	coord.y = fmax(0, fmin(coord.y, image->height - 1));
 
-	x.x = fmax(0, fmin(x.x, image->width - 1));
-	x.y = fmax(0, fmin(x.y, image->width - 1));
-	y.x = fmax(0, fmin(y.x, image->height - 1));
-	y.y = fmax(0, fmin(y.y, image->height - 1));
-
-	t_color topC;
-	topC.r = image->pixels[(image->height * y.x + x.x) * 4] * (1 - d.x) + image->pixels[(image->height * y.x + x.y) * 4] * d.x;
-	topC.g = image->pixels[(image->height * y.x + x.x) * 4 + 1] * (1 - d.x) + image->pixels[(image->height * y.x + x.y) * 4 + 1] * d.x;
-	topC.b = image->pixels[(image->height * y.x + x.x) * 4 + 2] * (1 - d.x) + image->pixels[(image->height * y.x + x.y) * 4 + 2] * d.x;
-	topC.a = image->pixels[(image->height * y.x + x.x) * 4 + 3] * (1 - d.x) + image->pixels[(image->height * y.x + x.y) * 4 + 3] * d.x;
-	t_color bottomC;
-	bottomC.r = image->pixels[(image->height * y.y + x.x) * 4] * (1 - d.x) + image->pixels[(image->height * y.y + x.y) * 4] * d.x;
-	bottomC.g = image->pixels[(image->height * y.y + x.x) * 4 + 1] * (1 - d.x) + image->pixels[(image->height * y.y + x.y) * 4 + 1] * d.x;
-	bottomC.b = image->pixels[(image->height * y.y + x.x) * 4 + 2] * (1 - d.x) + image->pixels[(image->height * y.y + x.y) * 4 + 2] * d.x;
-	bottomC.a = image->pixels[(image->height * y.y + x.x) * 4 + 3] * (1 - d.x) + image->pixels[(image->height * y.y + x.y) * 4 + 3] * d.x;
-	t_color final;
-	final.r = topC.r * (1 - d.y) + bottomC.r * d.y;
-	final.g = topC.g * (1 - d.y) + bottomC.g * d.y;
-	final.b = topC.b * (1 - d.y) + bottomC.b * d.y;
-	final.a = topC.a * (1 - d.y) + bottomC.a * d.y;
-	return (get_color_rgba(final.r, final.g, final.b, final.a));
+	t_color test;
+	test.r = image->pixels[(image->height * coord.y + coord.x) * 4];
+	test.g = image->pixels[(image->height * coord.y + coord.x) * 4 + 1];
+	test.b = image->pixels[(image->height * coord.y + coord.x) * 4 + 2];
+	test.a = image->pixels[(image->height * coord.y + coord.x) * 4 + 3];
+	return (get_color_rgba(test.r, test.g, test.b, test.a));
 }
 
 void rotate_minimap(t_program *program)
@@ -112,7 +93,7 @@ void rotate_minimap(t_program *program)
 
 			if (0 <= rotatedY && rotatedY < program->minimap.img->height && 0 <= rotatedX && rotatedX < program->minimap.img->width)
 			{
-				uint32_t pixel = bilinearInterp(program->minimap.img, rotatedX, rotatedY);
+				uint32_t pixel = get_pixel(program->minimap.img, rotatedX, rotatedY);
 				mlx_put_pixel(program->minimap.display, x, y, pixel);
 			}
 		}
@@ -158,14 +139,12 @@ void draw_minimap(t_program *program)
 			y.y = y.x + MINIMAP_CELL - 1;
 			if (y.x < 0)
 				y.x = 0;
-			if (get_at(program->map, comp.x, comp.y) == '1')
-				fill_minimap(program, x, y, get_color_rgba(241, 242, 246, 255));
-			else if (get_at(program->map, comp.x, comp.y) == ' ')
+			if (get_at(program->map, comp.x, comp.y) == ' ')
 				;
 			else if (get_at(program->map, comp.x, comp.y) == '0')
-				fill_minimap(program, x, y, get_color_rgba(47, 53, 66, 255));
+				fill_minimap(program, x, y, program->map.floor.rgba);
 			else
-				fill_minimap(program, x, y, get_color_rgba(223, 228, 234, 255));
+				fill_minimap(program, x, y, get_color_rgba(241, 242, 246, 255));
 		}
 	}
 	rotate_minimap(program);

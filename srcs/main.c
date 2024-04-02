@@ -39,7 +39,7 @@ void	init_program(t_program *program)
 	program->player.height = 0;
 	program->cursor = MLX_MOUSE_HIDDEN;
 	program->hud.bobbing = MAX_BOBBING;
-	program->hud.direction = -0.9;
+	program->hud.direction = -35;
 	program->hud.gindex = 0;
 	program->hud.shoot = false;
 	program->timer.music = 0;
@@ -55,6 +55,7 @@ void	on_destroy(t_program *program)
 	ft_freesplit(program->map.content);
 	mlx_close_window(program->mlx);
 	system("killall paplay");
+	mlx_terminate(program->mlx);
 }
 
 void	parse_to(t_program *program, mlx_image_t **image, char *path, int width, int height)
@@ -140,6 +141,5 @@ int	main(int argc, char **argv)
 	mlx_mouse_hook(program.mlx, change_cursor, &program);
 	mlx_loop_hook(program.mlx, update, &program);
 	mlx_loop(program.mlx);
-	mlx_terminate(program.mlx);
 	return (EXIT_SUCCESS);
 }

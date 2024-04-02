@@ -58,7 +58,7 @@ void show_shoot_frame(t_program *program)
 		program->hud.gun[i]->enabled = false;
 	}
 
-	program->hud.bobbing += program->hud.direction;
+	program->hud.bobbing += program->hud.direction * program->mlx->delta_time;
 	if (program->hud.bobbing >= MAX_BOBBING)
 	{
 		program->hud.bobbing = MAX_BOBBING;

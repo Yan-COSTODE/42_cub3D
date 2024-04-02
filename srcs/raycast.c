@@ -16,10 +16,10 @@ uint32_t set_fog(uint32_t original, double scale)
 {
 	t_color fog_color;
 	t_color color;
-	uint8_t elem;
+	double elem;
 
-	if (scale > 1)
-		scale = 1;
+	if (scale > MAX_FOG)
+		scale = MAX_FOG;
 	else if (scale < 0)
 		scale = 0;
 
@@ -27,11 +27,11 @@ uint32_t set_fog(uint32_t original, double scale)
 	fog_color.g = 0;
 	fog_color.b = 0;
 	elem = (original & RED_MASK) >> 24;
-	color.r = fog_color.r * scale + elem * (1 - scale);
+	color.r = (double)(fog_color.r) * scale + elem * (1.0 - scale);
 	elem = (original & GREEN_MASK) >> 16;
-	color.g = fog_color.g * scale + elem * (1 - scale);
+	color.g = (double)(fog_color.g) * scale + elem * (1.0 - scale);
 	elem = (original & BLUE_MASK) >> 8;
-	color.b = fog_color.b * scale + elem * (1 - scale);
+	color.b = (double)(fog_color.b) * scale + elem * (1.0 - scale);
 	return (get_color_rgba(color.r, color.g, color.b, 255));
 }
 
@@ -184,25 +184,21 @@ void draw_wall(t_program *program)
 			floorWall.y = map.y + 1.0;
 		}
 
-		double distWall;
-		double distPlayer;
 		double currentDist;
-		distWall = perpWallDist;
-		distPlayer = 0.0;
 		if (drawEnd < 0)
 			drawEnd = HEIGHT;
 		y = -1;
 		while(++y <= drawStart)
 		{
 			currentDist = (HEIGHT - (2.0 * program->player.height)) / (HEIGHT - 2.0 * (y - program->player.pitch));
-			uint32_t color = set_fog(program->map.ceiling.rgba, currentDist / 2);
+			uint32_t color = set_fog(program->map.ceiling.rgba, currentDist / FOG_LENGTH);
 			mlx_put_pixel(program->map.img, x, y, color);
 		}
 		y = drawEnd - 1;
 		while(++y < HEIGHT)
 		{
 			currentDist = (HEIGHT + (2.0 * program->player.height)) / (2.0 * (y - program->player.pitch) - HEIGHT);
-			uint32_t color = set_fog(program->map.floor.rgba, currentDist / 2);
+			uint32_t color = set_fog(program->map.floor.rgba, currentDist / FOG_LENGTH);
 			mlx_put_pixel(program->map.img, x, y, color);
 		}
 
@@ -213,7 +209,7 @@ void draw_wall(t_program *program)
 			texPos += texStep;
 			uint32_t coord = (MAX_RES * tex.y + (MAX_RES - tex.x)) * 4;
 			uint32_t color = get_color_rgba(text->pixels[coord], text->pixels[coord + 1], text->pixels[coord + 2], text->pixels[coord + 3]);
-			color = set_fog(color, perpWallDist / 2.3);
+			color = set_fog(color, perpWallDist / (FOG_LENGTH * 1.15));
 			mlx_put_pixel(program->map.img, x, y, color);
 		}
 	}

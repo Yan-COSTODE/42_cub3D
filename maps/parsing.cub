@@ -4,8 +4,8 @@ WE ./textures/yellow.png
 EA ./textures/black.png
 
 
-F 255,107,129
-C 236,204,104
+F 50,50,50
+C 50,50,50
 
 
 

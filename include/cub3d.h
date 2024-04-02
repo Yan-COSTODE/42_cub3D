@@ -54,7 +54,8 @@
 # define RED_MASK 0xFF000000
 # define GREEN_MASK 0x00FF0000
 # define BLUE_MASK 0x0000FF00
-# define ALPHA_MASK 0x000000FF
+# define MAX_FOG 1
+# define FOG_LENGTH 2.5
 
 // LIBFT
 size_t ft_strlen(const char *s);
