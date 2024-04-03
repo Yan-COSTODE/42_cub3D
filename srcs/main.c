@@ -47,6 +47,7 @@ void	init_program(t_program *program)
 	program->timer.gun = 0;
 	program->timer.breath = 0;
 	program->player.moving = false;
+	program->door.len = 0;
 }
 
 void	on_destroy(t_program *program)
@@ -54,6 +55,8 @@ void	on_destroy(t_program *program)
 	free(program->filename);
 	ft_freesplit(program->map.content);
 	mlx_close_window(program->mlx);
+	if (program->door.elem)
+		free(program->door.elem);
 	system("killall paplay");
 }
 
@@ -74,12 +77,16 @@ void	parse_to(t_program *program, mlx_image_t **image, char *path, int width, in
 
 void	parse_const(t_program *program)
 {
+	double mult;
+
+	mult = (HEIGHT / 360.0 + 1.0 + WIDTH / 640.0 + 1.0) / 2.0;
 	parse_to(program, &program->minimap.img_player, "./textures/player.png", MINIMAP_PLAYER, MINIMAP_PLAYER);
+	parse_to(program, &program->door.img, "./textures/door.png", MAX_RES, MAX_RES);
 	parse_to(program, &program->hud.crosshair, "./textures/crosshair.png", CROSSHAIR, CROSSHAIR);
-	parse_to(program, &program->hud.gun[0], "./textures/gun_0.png", 133 * 4, 96 * 4);
-	parse_to(program, &program->hud.gun[1], "./textures/gun_1.png", 133 * 4, 96 * 4);
-	parse_to(program, &program->hud.gun[2], "./textures/gun_2.png", 133 * 4, 96 * 4);
-	parse_to(program, &program->hud.gun[3], "./textures/gun_3.png", 133 * 4, 96 * 4);
+	parse_to(program, &program->hud.gun[0], "./textures/gun_0.png", 133 * mult, 96 * mult);
+	parse_to(program, &program->hud.gun[1], "./textures/gun_1.png", 133 * mult, 96 * mult);
+	parse_to(program, &program->hud.gun[2], "./textures/gun_2.png", 133 * mult, 96 * mult);
+	parse_to(program, &program->hud.gun[3], "./textures/gun_3.png", 133 * mult, 96 * mult);
 	setup_shoot(program);
 }
 
@@ -117,6 +124,7 @@ void	update(void *param)
 	draw(program);
 	draw_minimap(program);
 	update_sound(program);
+	update_door(program);
 	mlx_set_cursor_mode(program->mlx, program->cursor);
 }
 

@@ -141,7 +141,7 @@ void draw_minimap(t_program *program)
 				y.x = 0;
 			if (get_at(program->map, comp.x, comp.y) == ' ')
 				;
-			else if (get_at(program->map, comp.x, comp.y) == '0')
+			else if (get_at(program->map, comp.x, comp.y) == '0' || get_at(program->map, comp.x, comp.y) == (int)(OPEN) + '0')
 				fill_minimap(program, x, y, program->map.floor.rgba);
 			else
 				fill_minimap(program, x, y, get_color_rgba(241, 242, 246, 255));

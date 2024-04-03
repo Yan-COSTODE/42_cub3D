@@ -13,11 +13,32 @@
 #ifndef STRUCT_H
 # define STRUCT_H
 
+typedef enum s_door_status
+{
+	CLOSED = 2,
+	OPENING = 3,
+	OPEN = 4,
+	CLOSING = 5
+} t_door_status;
+
 typedef struct s_coord_int
 {
 	int	x;
 	int	y;
 }	t_coord_int;
+
+typedef struct s_door_elem
+{
+	t_coord_int pos;
+	double status;
+} t_door_elem;
+
+typedef struct s_door
+{
+	t_door_elem *elem;
+	int len;
+	mlx_image_t *img;
+}	t_door;
 
 typedef struct s_coord
 {
@@ -98,6 +119,7 @@ typedef struct s_program
 	int		fd;
 	int		exit_value;
 	t_timer timer;
+	t_door door;
 	enum mouse_mode cursor;
 }			t_program;
 

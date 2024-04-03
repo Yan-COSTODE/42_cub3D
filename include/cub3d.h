@@ -27,8 +27,8 @@
 # include <math.h>
 # define BUFFER_SIZE 1024
 # define FD_MAX 1024
-# define HEIGHT 1080
-# define WIDTH 1920
+# define HEIGHT 720
+# define WIDTH 1280
 # define MAX_RES 1024
 # define MINIMAP_CELLS 10
 # define MINIMAP_CELL 16
@@ -56,6 +56,10 @@
 # define BLUE_MASK 0x0000FF00
 # define MAX_FOG 1
 # define FOG_LENGTH 3
+# define MOVE_OFFSET 1.4
+# define MOUSE_SENS 15
+# define DOOR_OPEN 1.0 / 4.0
+# define DOOR_CLOSE 1.0 / 4.0
 
 // LIBFT
 size_t ft_strlen(const char *s);
@@ -104,11 +108,15 @@ void shoot(t_program *program, bool try);
 void draw(t_program *program);
 void draw_minimap(t_program *program);
 void show_shoot_frame(t_program *program);
+void update_door(t_program *program);
+double get_door(t_program *program, t_coord_int coord);
 
 // SOUND
 void update_sound(t_program *program);
 void play_gun();
 void play_jump();
 void play_land();
+void play_door();
+void play_door_boom();
 
 #endif

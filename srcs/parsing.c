@@ -272,11 +272,46 @@ void	fill_width(t_program *program)
 	}
 }
 
+void add_door(t_program *program, t_coord_int coord)
+{
+	t_door_elem *tmp;
+	int i;
+
+	if (program->door.len == 0)
+	{
+		program->door.elem = ft_calloc(1, sizeof(t_door_elem));
+		program->door.elem[0].status = CLOSED;
+		program->door.elem[0].pos = coord;
+		set_at(&program->map, coord.x, coord.y, (int)(CLOSED) + '0');
+		++program->door.len;
+		return ;
+	}
+	tmp = ft_calloc(program->door.len, sizeof(t_door_elem))	;
+	i = -1;
+	while (++i < program->door.len)
+		tmp[i] = program->door.elem[i];
+	free(program->door.elem);
+	program->door.elem = ft_calloc(program->door.len + 1, sizeof(t_door_elem))	;
+	i = -1;
+	while (++i < program->door.len)
+		program->door.elem[i] = tmp[i];
+	free(tmp);
+	program->door.elem[i].status = CLOSED;
+	program->door.elem[i].pos = coord;
+	set_at(&program->map, coord.x, coord.y, (int)(CLOSED) + '0');
+	++program->door.len;
+}
+
 void parse_door(t_program *program)
 {
 	char **map;
+	t_coord_int coord;
 
 	map = ft_strdup_split(program->map.content);
+	// TODO Check
+	coord.x = 23;
+	coord.y = 11;
+	add_door(program, coord);
 	ft_freesplit(map);
 }
 

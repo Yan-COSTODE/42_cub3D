@@ -1,7 +1,7 @@
-NO ./textures/cyan.png
-SO ./textures/pink.png
-WE ./textures/yellow.png
-EA ./textures/black.png
+NO ./textures/5.png
+SO ./textures/4.png
+WE ./textures/12.png
+EA ./textures/16.png
 
 F 47,53,66
 C 236,204,104

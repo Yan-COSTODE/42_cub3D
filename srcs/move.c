@@ -18,12 +18,12 @@ void move_up(t_program *program, double move_speed)
 	int y;
 
 	program->player.moving = true;
-	x = program->player.pos.x + program->player.dir.x * move_speed;
-	y = program->player.pos.y + program->player.dir.y * move_speed;
+	x = program->player.pos.x + (program->player.dir.x + MOVE_OFFSET * program->player.dir.x) * move_speed;
+	y = program->player.pos.y + (program->player.dir.y + MOVE_OFFSET * program->player.dir.y) * move_speed;
 
-	if (get_at(program->map, x, program->player.pos.y) != '1')
+	if (get_at(program->map, x, program->player.pos.y) == '0' || get_at(program->map, x, program->player.pos.y) == (int)(OPEN) + '0')
 		program->player.pos.x += program->player.dir.x * move_speed;
-	if (get_at(program->map, program->player.pos.x, y) != '1')
+	if (get_at(program->map, program->player.pos.x, y) == '0' || get_at(program->map, program->player.pos.x, y) == (int)(OPEN) + '0')
 		program->player.pos.y += program->player.dir.y * move_speed;
 }
 
@@ -33,12 +33,12 @@ void move_down(t_program *program, double move_speed)
 	int y;
 
 	program->player.moving = true;
-	x = program->player.pos.x - program->player.dir.x * move_speed;
-	y = program->player.pos.y - program->player.dir.y * move_speed;
+	x = program->player.pos.x - (program->player.dir.x + MOVE_OFFSET * program->player.dir.x) * move_speed;
+	y = program->player.pos.y - (program->player.dir.y + MOVE_OFFSET * program->player.dir.y) * move_speed;
 
-	if (get_at(program->map, x, program->player.pos.y) != '1')
+	if (get_at(program->map, x, program->player.pos.y) == '0' || get_at(program->map, x, program->player.pos.y) == (int)(OPEN) + '0')
 		program->player.pos.x -= program->player.dir.x * move_speed;
-	if (get_at(program->map, program->player.pos.x, y) != '1')
+	if (get_at(program->map, program->player.pos.x, y) == '0' || get_at(program->map, program->player.pos.x, y) == (int)(OPEN) + '0')
 		program->player.pos.y -= program->player.dir.y * move_speed;
 }
 
@@ -48,12 +48,12 @@ void move_right(t_program *program, double move_speed)
 	int y;
 
 	program->player.moving = true;
-	x = program->player.pos.x - program->player.dir.y * move_speed;
-	y = program->player.pos.y + program->player.dir.x * move_speed;
+	x = program->player.pos.x - (program->player.dir.y + MOVE_OFFSET * program->player.dir.y) * move_speed;
+	y = program->player.pos.y + (program->player.dir.x + MOVE_OFFSET * program->player.dir.x) * move_speed;
 
-	if (get_at(program->map, x, program->player.pos.y) != '1')
+	if (get_at(program->map, x, program->player.pos.y) == '0' || get_at(program->map, x, program->player.pos.y) == (int)(OPEN) + '0')
 		program->player.pos.x -= program->player.dir.y * move_speed;
-	if (get_at(program->map, program->player.pos.x, y) != '1')
+	if (get_at(program->map, program->player.pos.x, y) == '0' || get_at(program->map, program->player.pos.x, y) == (int)(OPEN) + '0')
 		program->player.pos.y += program->player.dir.x * move_speed;
 }
 
@@ -63,12 +63,12 @@ void move_left(t_program *program, double move_speed)
 	int y;
 
 	program->player.moving = true;
-	x = program->player.pos.x + program->player.dir.y * move_speed;
-	y = program->player.pos.y - program->player.dir.x * move_speed;
+	x = program->player.pos.x + (program->player.dir.y + MOVE_OFFSET * program->player.dir.y) * move_speed;
+	y = program->player.pos.y - (program->player.dir.x + MOVE_OFFSET * program->player.dir.x) * move_speed;
 
-	if (get_at(program->map, x, program->player.pos.y) != '1')
+	if (get_at(program->map, x, program->player.pos.y) == '0' || get_at(program->map, x, program->player.pos.y) == (int)(OPEN) + '0')
 		program->player.pos.x += program->player.dir.y * move_speed;
-	if (get_at(program->map, program->player.pos.x, y) != '1')
+	if (get_at(program->map, program->player.pos.x, y) == '0' || get_at(program->map, program->player.pos.x, y) == (int)(OPEN) + '0')
 		program->player.pos.y -= program->player.dir.x * move_speed;
 }
 
@@ -131,9 +131,9 @@ void rotate(t_program *program)
 		rotate_left(program, rotate_speed);
 	mlx_get_mouse_pos(program->mlx, &mouse.x, &mouse.y);
 	if (mouse.x > WIDTH / 2)
-		rotate_right(program, rotate_speed);
+		rotate_right(program, rotate_speed * MOUSE_SENS * ((mouse.x - WIDTH / 2.0) / (WIDTH / 2.0)));
 	else if (mouse.x < WIDTH / 2)
-		rotate_left(program, rotate_speed);
+		rotate_left(program, rotate_speed * MOUSE_SENS * ((WIDTH / 2.0 - mouse.x) / (WIDTH / 2.0)));
 	if (mouse.y != HEIGHT / 2)
 		rotate_up_down(program, HEIGHT / 2 - mouse.y);
 	mlx_set_mouse_pos(program->mlx, WIDTH / 2, HEIGHT / 2);

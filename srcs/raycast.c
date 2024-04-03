@@ -215,7 +215,150 @@ void draw_wall(t_program *program)
 	}
 }
 
+void draw_door(t_program *program)
+{
+	int x;
+
+	x = -1;
+	while (++x < WIDTH)
+	{
+		t_coord rayDir;
+		double cameraX = 2 * x / (double)(WIDTH) - 1;
+		rayDir.x = program->player.dir.x + program->player.plane.x * cameraX;
+		rayDir.y = program->player.dir.y + program->player.plane.y * cameraX;
+
+		t_coord_int map;
+		map.x = (int)(program->player.pos.x);
+		map.y = (int)(program->player.pos.y);
+
+		t_coord sideDist;
+		t_coord deltaDist;
+		if (rayDir.x == 0)
+			deltaDist.x = BIG;
+		else
+			deltaDist.x = fabs(1 / rayDir.x);
+		if (rayDir.y == 0)
+			deltaDist.y = BIG;
+		else
+			deltaDist.y = fabs(1 / rayDir.y);
+		double perpWallDist;
+
+		t_coord_int step;
+		int hit;
+		hit = 0;
+		int side;
+
+		if (rayDir.x < 0)
+		{
+			step.x = -1;
+			sideDist.x = (program->player.pos.x - map.x) * deltaDist.x;
+		}
+		else
+		{
+			step.x = 1;
+			sideDist.x = (map.x + 1.0 - program->player.pos.x) * deltaDist.x;
+		}
+		if (rayDir.y < 0)
+		{
+			step.y = -1;
+			sideDist.y = (program->player.pos.y - map.y) * deltaDist.y;
+		}
+		else
+		{
+			step.y = 1;
+			sideDist.y = (map.y + 1.0 - program->player.pos.y) * deltaDist.y;
+		}
+
+		while (hit == 0)
+		{
+			if (sideDist.x < sideDist.y)
+			{
+				sideDist.x += deltaDist.x;
+				map.x += step.x;
+				side = 0;
+			}
+			else
+			{
+				sideDist.y += deltaDist.y;
+				map.y += step.y;
+				side = 1;
+			}
+			if (get_at(program->map, map.x, map.y) != '0')
+				hit = 1;
+		}
+		if (get_at(program->map, map.x, map.y) == '1' || get_at(program->map, map.x, map.y) == ' ')
+			continue;
+		if (side == 0)
+			perpWallDist = sideDist.x - deltaDist.x;
+		else
+			perpWallDist = sideDist.y - deltaDist.y;
+
+		int lineHeight;
+		lineHeight = (int)(HEIGHT / perpWallDist);
+		int drawStart;
+		int drawEnd;
+		int offset;
+		offset = program->player.pitch + (program->player.height / perpWallDist);
+		drawStart = -lineHeight / 2 + HEIGHT / 2 + offset;
+		if (drawStart < 0)
+			drawStart = 0;
+		drawEnd = lineHeight / 2 + HEIGHT / 2 + offset;
+		if (drawEnd >= HEIGHT)
+			drawEnd = HEIGHT - 1;
+
+		mlx_image_t	*text;
+		double wallX;
+
+		text = NULL;
+		if (side == 0)
+		{
+			wallX = program->player.pos.y + perpWallDist * rayDir.y;
+			if (get_at(program->map, map.x, map.y) != '1' && get_at(program->map, map.x, map.y) != ' ')
+				text = program->door.img;
+		}
+		else
+		{
+			wallX = program->player.pos.x + perpWallDist * rayDir.x;
+			if (get_at(program->map, map.x, map.y) != '1' && get_at(program->map, map.x, map.y) != ' ')
+				text = program->door.img;
+		}
+
+		wallX -= floor(wallX);
+		t_coord_int tex;
+
+		tex.x = (int)(wallX * (double)(MAX_RES));
+		if (side == 0 && rayDir.x > 0)
+			tex.x = MAX_RES - tex.x - 1;
+		else if (side == 1 && rayDir.y < 0)
+			tex.x = MAX_RES - tex.x - 1;
+
+		double texStep;
+		double texPos;
+		int y;
+
+		texStep = 1.0 * MAX_RES / lineHeight;
+		texPos = (drawStart - program->player.pitch - (program->player.height / perpWallDist) - HEIGHT / 2 + lineHeight / 2) * texStep;
+
+		if (drawEnd < 0)
+			drawEnd = HEIGHT;
+
+		y = drawEnd - (drawEnd - drawStart) * get_door(program, map) - 1;
+		if (!text)
+			continue;
+		while (++y < drawEnd)
+		{
+			tex.y = (int)(texPos) & (MAX_RES - 1);
+			texPos += texStep;
+			uint32_t coord = (MAX_RES * tex.y + (MAX_RES - tex.x)) * 4;
+			uint32_t color = get_color_rgba(text->pixels[coord], text->pixels[coord + 1], text->pixels[coord + 2], text->pixels[coord + 3]);
+			color = set_fog(color, perpWallDist / (FOG_LENGTH * 1.15));
+			mlx_put_pixel(program->map.img, x, y, color);
+		}
+	}
+}
+
 void draw(t_program *program)
 {
 	draw_wall(program);
+	draw_door(program);
 }

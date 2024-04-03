@@ -22,6 +22,16 @@ void play_jump()
 	system("paplay --volume=49152 sounds/Jump.wav &");
 }
 
+void play_door()
+{
+	system("paplay --volume=65536 sounds/Door.wav &");
+}
+
+void play_door_boom()
+{
+	system("timeout 1s paplay --volume=65536 sounds/Boom.wav &");
+}
+
 void play_walk(t_program *program)
 {
 	if (!program->player.moving && program->timer.footstep == 0)
