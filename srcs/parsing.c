@@ -195,22 +195,22 @@ void set_player_orientation(t_program *program)
 	{
 		program->player.dir.x = 0;
 		program->player.dir.y = 1;
-		program->player.plane.x = 1;
+		program->player.plane.x = -1;
 		program->player.plane.y = 0;
 	}
 	else if (program->player.orientation == 'E')
 	{
-		program->player.dir.x = -1;
+		program->player.dir.x = 1;
 		program->player.dir.y = 0;
 		program->player.plane.x = 0;
 		program->player.plane.y = 1;
 	}
 	else if (program->player.orientation == 'W')
 	{
-		program->player.dir.x = 1;
+		program->player.dir.x = -1;
 		program->player.dir.y = 0;
 		program->player.plane.x = 0;
-		program->player.plane.y = 1;
+		program->player.plane.y = -1;
 	}
 }
 
@@ -302,16 +302,50 @@ void add_door(t_program *program, t_coord_int coord)
 	++program->door.len;
 }
 
+void flood_fill(t_program *program, char **map, int x, int y)
+{
+	if (y < 0 || y > program->map.height || x < 0 || x > program->map.width || map[y][x] != '0')
+		return ;
+
+	map[y][x] = '.';
+	flood_fill(program, map, x - 1, y);
+	flood_fill(program, map, x + 1, y);
+	flood_fill(program, map, x, y - 1);
+	flood_fill(program, map, x, y + 1);
+}
+
 void parse_door(t_program *program)
 {
 	char **map;
 	t_coord_int coord;
 
 	map = ft_strdup_split(program->map.content);
-	// TODO Check
-	coord.x = 23;
-	coord.y = 11;
-	add_door(program, coord);
+	coord.x = -1;
+	while (++coord.x < program->map.width)
+	{
+		coord.y = -1;
+		while (++coord.y < program->map.height)
+		{
+			if (map[coord.y][coord.x] == '0')
+			{
+				flood_fill(program, map, coord.x, coord.y);
+				coord.x -= 1;
+				if (coord.x >= 0 && map[coord.y][coord.x] == '1' && coord.x - 1 >= 0 && (map[coord.y][coord.x - 1] == '.' || map[coord.y][coord.x - 1] == '0'))
+					add_door(program, coord);
+				coord.x += 2;
+				if (coord.x < program->map.width && map[coord.y][coord.x] == '1' && coord.x + 1 < program->map.width && (map[coord.y][coord.x + 1] == '.' || map[coord.y][coord.x + 1] == '0')) {
+					add_door(program, coord);
+				}
+				coord.x -= 1;
+				coord.y -= 1;
+				if (coord.y >= 0 && map[coord.y][coord.x] == '1' && coord.y - 1 >= 0 && (map[coord.y - 1][coord.x] == '.' || map[coord.y - 1][coord.x] == '0'))
+					add_door(program, coord);
+				coord.y += 2;
+				if (coord.y < program->map.height && map[coord.y][coord.x] == '1' && coord.y + 1 < program->map.height && (map[coord.y + 1][coord.x] == '.' || map[coord.y + 1][coord.x] == '0'))
+					add_door(program, coord);
+			}
+		}
+	}
 	ft_freesplit(map);
 }
 

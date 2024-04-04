@@ -48,6 +48,7 @@ void	init_program(t_program *program)
 	program->timer.breath = 0;
 	program->player.moving = false;
 	program->door.len = 0;
+	program->door.elem = NULL;
 }
 
 void	on_destroy(t_program *program)
@@ -147,6 +148,7 @@ int	main(int argc, char **argv)
 		return (EXIT_FAILURE);
 	}
 	print_map(program.map);
+	mlx_set_mouse_pos(program.mlx, WIDTH / 2, HEIGHT / 2);
 	mlx_close_hook(program.mlx, (void (*)(void *))on_destroy, &program);
 	mlx_mouse_hook(program.mlx, change_cursor, &program);
 	mlx_loop_hook(program.mlx, update, &program);

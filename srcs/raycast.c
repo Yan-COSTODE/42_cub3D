@@ -103,7 +103,7 @@ void draw_wall(t_program *program)
 				map.y += step.y;
 				side = 1;
 			}
-			if (get_at(program->map, map.x, map.y) == '1')
+			if (get_at(program->map, map.x, map.y) == '1' || get_at(program->map, map.x, map.y) == (int)(CLOSED) + '0')
 				hit = 1;
 		}
 
@@ -131,7 +131,9 @@ void draw_wall(t_program *program)
 		if (side == 0)
 		{
 			wallX = program->player.pos.y + perpWallDist * rayDir.y;
-			if (program->player.pos.x < map.x)
+			if (get_at(program->map, map.x, map.y) == (int)(CLOSED) + '0')
+				text = program->door.img;
+			else if (program->player.pos.x < map.x)
 				text = program->map.west;
 			else
 				text = program->map.east;
@@ -139,7 +141,9 @@ void draw_wall(t_program *program)
 		else
 		{
 			wallX = program->player.pos.x + perpWallDist * rayDir.x;
-			if (program->player.pos.y < map.y)
+			if (get_at(program->map, map.x, map.y) == (int)(CLOSED) + '0')
+				text = program->door.img;
+			else if (program->player.pos.y < map.y)
 				text = program->map.south;
 			else
 				text = program->map.north;
