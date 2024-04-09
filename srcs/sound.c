@@ -6,33 +6,33 @@
 /*   By: ycostode <ycostode@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 12:47:43 by ycostode          #+#    #+#             */
-/*   Updated: 2024/04/01 13:48:50 by ycostode         ###   ########.fr       */
+/*   Updated: 2024/04/09 19:55:18 by ycostode         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
-void play_land()
+void	play_land(void)
 {
 	system("paplay --volume=49152 sounds/Land.wav &");
 }
 
-void play_jump()
+void	play_jump(void)
 {
 	system("paplay --volume=49152 sounds/Jump.wav &");
 }
 
-void play_door()
+void	play_door(void)
 {
 	system("paplay --volume=65536 sounds/Door.wav &");
 }
 
-void play_door_boom()
+void	play_door_boom(void)
 {
 	system("timeout 1s paplay --volume=65536 sounds/Boom.wav &");
 }
 
-void play_walk(t_program *program)
+void	play_walk(t_program *program)
 {
 	if (!program->player.moving && program->timer.footstep == 0)
 		return ;
@@ -43,7 +43,7 @@ void play_walk(t_program *program)
 		program->timer.footstep = 0;
 }
 
-void play_breath(t_program *program)
+void	play_breath(t_program *program)
 {
 	if (program->timer.breath == 0)
 		system("timeout 2.5s paplay --volume=49152 sounds/Breathing.wav &");
@@ -52,7 +52,7 @@ void play_breath(t_program *program)
 		program->timer.breath = 0;
 }
 
-void play_background(t_program *program)
+void	play_background(t_program *program)
 {
 	if (program->timer.music == 0)
 		system("paplay --volume=32768 sounds/Background.wav &");
@@ -61,12 +61,12 @@ void play_background(t_program *program)
 		program->timer.music = 0;
 }
 
-void play_gun()
+void	play_gun(void)
 {
 	system("paplay --volume=32768 sounds/Gun.wav &");
 }
 
-void update_sound(t_program *program)
+void	update_sound(t_program *program)
 {
 	play_background(program);
 	play_walk(program);

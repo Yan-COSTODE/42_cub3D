@@ -6,21 +6,23 @@
 /*   By: ycostode <ycostode@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/28 21:01:12 by ycostode          #+#    #+#             */
-/*   Updated: 2024/03/28 21:01:12 by ycostode         ###   ########.fr       */
+/*   Updated: 2024/04/09 19:54:20 by ycostode         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
-void close_file(t_program *program)
+void	close_file(t_program *program)
 {
 	if (close(program->fd) == -1)
 		program->exit_value = print_perror("cub3D: close");
 }
 
-void open_file(t_program *program)
+void	open_file(t_program *program)
 {
-	if (ft_strlen(program->filename) < 5 || ft_strcmp(&program->filename[ft_strlen(program->filename) - 4], ".cub") != 0)
+	if (ft_strlen(program->filename) < 5
+		|| ft_strcmp(&program->filename[ft_strlen(program->filename) - 4],
+			".cub") != 0)
 	{
 		program->exit_value = print_error("cub3D: file error");
 		return ;
@@ -30,7 +32,7 @@ void open_file(t_program *program)
 		program->exit_value = print_perror("cub3D: open");
 }
 
-void parse_error(int *status, char *name)
+void	parse_error(int *status, char *name)
 {
 	*status = EXIT_FAILURE;
 	print_fd(2, "\x1b[1;31mError\ncub3D: ");
@@ -38,7 +40,7 @@ void parse_error(int *status, char *name)
 	print_fd(2, ": Wrong Value\n\x1b[0m");
 }
 
-void parse_error_color(int *status, char *name, char **split, char *color)
+void	parse_error_color(int *status, char *name, char **split, char *color)
 {
 	ft_freesplit(split);
 	*status = EXIT_FAILURE;
@@ -52,10 +54,11 @@ void parse_error_color(int *status, char *name, char **split, char *color)
 	print_fd(2, ": Wrong Value\n\x1b[0m");
 }
 
-void	parse_image(t_program *program, int *status, mlx_image_t** image, char **args)
+void	parse_image(t_program *program, int *status, mlx_image_t **image,
+		char **args)
 {
-	mlx_texture_t *tex;
-	char *tmp;
+	mlx_texture_t	*tex;
+	char			*tmp;
 
 	if (!image)
 		return ;
@@ -75,15 +78,15 @@ void	parse_image(t_program *program, int *status, mlx_image_t** image, char **ar
 		return (parse_error(status, args[0]));
 }
 
-uint32_t get_color_rgba(int r, int g, int b, int a)
+uint32_t	get_color_rgba(int r, int g, int b, int a)
 {
 	return (r << 24 | g << 16 | b << 8 | a);
 }
 
-void	parse_color(int *status, t_color* color, char **args)
+void	parse_color(int *status, t_color *color, char **args)
 {
-	char **split;
-	char *tmp;
+	char	**split;
+	char	*tmp;
 
 	if (ft_strlen_split(args) == 2)
 	{
@@ -94,69 +97,51 @@ void	parse_color(int *status, t_color* color, char **args)
 			return (parse_error_color(status, args[0], split, "r"));
 		if (!atoi_convert(split[1], &color->g))
 			return (parse_error_color(status, args[0], split, "g"));
+		tmp = ft_substr(split[2], 0, ft_strchr(split[2], '\n') - split[2]);
+		if (!atoi_convert(tmp, &color->b))
 		{
-			tmp = ft_substr(split[2], 0, ft_strchr(split[2], '\n') - split[2]);
-			if (!atoi_convert(tmp, &color->b))
-			{
-				free(tmp);
-				return (parse_error_color(status, args[0], split, "b"));
-			}
-			color->rgba = get_color_rgba(color->r, color->g, color->b, 255);
 			free(tmp);
+			return (parse_error_color(status, args[0], split, "b"));
 		}
+		color->rgba = get_color_rgba(color->r, color->g, color->b, 255);
+		free(tmp);
 		ft_freesplit(split);
 	}
 	if (ft_strlen_split(args) != 2)
 		return (parse_error(status, args[0]));
 }
 
-bool is_empty_line(char *line)
-{
-	int i;
-
-	i = 0;
-	while (line[i])
-	{
-		if (line[i] != ' ' && line[i] != '\n' && line[i] != '\t' && line[i] != '\v' && line[i] != '\f' && line[i] != '\r')
-			return (false);
-		++i;
-	}
-	return (true);
-}
-
 void	parse_content(t_program *program)
 {
-	char *tmp;
-	char	*line;
-	char *final;
+	t_parse	parse;
 
-	line = get_next_line(program->fd);
-	while (line[0] == '\n')
+	parse.line = get_next_line(program->fd);
+	while (parse.line[0] == '\n')
 	{
-		free(line);
-		line = get_next_line(program->fd);
+		free(parse.line);
+		parse.line = get_next_line(program->fd);
 	}
-	final = line;
-	line = get_next_line(program->fd);
+	parse.final = parse.line;
+	parse.line = get_next_line(program->fd);
 	program->map.height++;
-	while (line)
+	while (parse.line)
 	{
-		tmp = ft_strjoin(final, line);
-		free(final);
-		final = tmp;
-		if ((int)ft_strlen(line) > program->map.width)
-			program->map.width = ft_strlen(line);
-		free(line);
-		line = get_next_line(program->fd);
+		parse.tmp = ft_strjoin(parse.final, parse.line);
+		free(parse.final);
+		parse.final = parse.tmp;
+		if ((int)ft_strlen(parse.line) > program->map.width)
+			program->map.width = ft_strlen(parse.line);
+		free(parse.line);
+		parse.line = get_next_line(program->fd);
 		program->map.height++;
 	}
-	program->map.content = ft_split(final, '\n');
-	free(final);
+	program->map.content = ft_split(parse.final, '\n');
+	free(parse.final);
 }
 
 int	parse_map(t_program *program, char *line)
 {
-	char **split;
+	char		**split;
 	static int	args = 0;
 
 	split = ft_split(line, ' ');
@@ -182,7 +167,7 @@ int	parse_map(t_program *program, char *line)
 	return (args);
 }
 
-void set_player_orientation(t_program *program)
+void	up_orientation(t_program *program)
 {
 	if (program->player.orientation == 'N')
 	{
@@ -198,7 +183,12 @@ void set_player_orientation(t_program *program)
 		program->player.plane.x = -1;
 		program->player.plane.y = 0;
 	}
-	else if (program->player.orientation == 'E')
+}
+
+void	set_player_orientation(t_program *program)
+{
+	up_orientation(program);
+	if (program->player.orientation == 'E')
 	{
 		program->player.dir.x = 1;
 		program->player.dir.y = 0;
@@ -214,29 +204,28 @@ void set_player_orientation(t_program *program)
 	}
 }
 
-void parse_player(t_program *program)
+void	parse_player(t_program *program)
 {
-	int x;
-	int y;
+	t_coord_int	coord;
 
-	y = -1;
-	while (++y < program->map.height)
+	coord.y = -1;
+	while (++coord.y < program->map.height)
 	{
-		x = -1;
-		while (++x < program->map.width)
+		coord.x = -1;
+		while (++coord.x < program->map.width)
 		{
-			if (get_at(program->map, x, y) == 'N')
+			if (get_at(program->map, coord.x, coord.y) == 'N')
 				program->player.orientation = 'N';
-			if (get_at(program->map, x, y) == 'S')
+			if (get_at(program->map, coord.x, coord.y) == 'S')
 				program->player.orientation = 'S';
-			if (get_at(program->map, x, y) == 'E')
+			if (get_at(program->map, coord.x, coord.y) == 'E')
 				program->player.orientation = 'E';
-			if (get_at(program->map, x, y) == 'W')
+			if (get_at(program->map, coord.x, coord.y) == 'W')
 				program->player.orientation = 'W';
 			if (program->player.orientation != 0)
 			{
-				program->player.pos.x = x + 0.5;
-				program->player.pos.y = y + 0.5;
+				program->player.pos.x = coord.x + 0.5;
+				program->player.pos.y = coord.y + 0.5;
 				set_player_orientation(program);
 				return ;
 			}
@@ -246,7 +235,7 @@ void parse_player(t_program *program)
 
 void	fill_width(t_program *program)
 {
-	char *spaces;
+	char	*spaces;
 	int		line_len;
 	int		i;
 	int		j;
@@ -272,26 +261,28 @@ void	fill_width(t_program *program)
 	}
 }
 
-void add_door(t_program *program, t_coord_int coord)
+void	init_door(t_program *program, t_coord_int coord)
 {
-	t_door_elem *tmp;
-	int i;
+	program->door.elem = ft_calloc(1, sizeof(t_door_elem));
+	program->door.elem[0].status = CLOSED;
+	program->door.elem[0].pos = coord;
+	set_at(&program->map, coord.x, coord.y, (int)(CLOSED) + '0');
+	++program->door.len;
+}
+
+void	add_door(t_program *program, t_coord_int coord)
+{
+	t_door_elem	*tmp;
+	int			i;
 
 	if (program->door.len == 0)
-	{
-		program->door.elem = ft_calloc(1, sizeof(t_door_elem));
-		program->door.elem[0].status = CLOSED;
-		program->door.elem[0].pos = coord;
-		set_at(&program->map, coord.x, coord.y, (int)(CLOSED) + '0');
-		++program->door.len;
-		return ;
-	}
-	tmp = ft_calloc(program->door.len, sizeof(t_door_elem))	;
+		return (init_door(program, coord));
+	tmp = ft_calloc(program->door.len, sizeof(t_door_elem));
 	i = -1;
 	while (++i < program->door.len)
 		tmp[i] = program->door.elem[i];
 	free(program->door.elem);
-	program->door.elem = ft_calloc(program->door.len + 1, sizeof(t_door_elem))	;
+	program->door.elem = ft_calloc(program->door.len + 1, sizeof(t_door_elem));
 	i = -1;
 	while (++i < program->door.len)
 		program->door.elem[i] = tmp[i];
@@ -302,11 +293,11 @@ void add_door(t_program *program, t_coord_int coord)
 	++program->door.len;
 }
 
-void flood_fill(t_program *program, char **map, int x, int y)
+void	flood_fill(t_program *program, char **map, int x, int y)
 {
-	if (y < 0 || y > program->map.height || x < 0 || x > program->map.width || map[y][x] != '0')
+	if (y < 0 || y > program->map.height || x < 0 || x > program->map.width
+		|| map[y][x] != '0')
 		return ;
-
 	map[y][x] = '.';
 	flood_fill(program, map, x - 1, y);
 	flood_fill(program, map, x + 1, y);
@@ -314,10 +305,41 @@ void flood_fill(t_program *program, char **map, int x, int y)
 	flood_fill(program, map, x, y + 1);
 }
 
-void parse_door(t_program *program)
+void	door_horizontal(t_program *program, t_coord_int *coord, char **map)
 {
-	char **map;
-	t_coord_int coord;
+	coord->x -= 1;
+	if (coord->x >= 0 && map[coord->y][coord->x] == '1' && coord->x - 1 >= 0
+		&& (map[coord->y][coord->x - 1] == '.' || map[coord->y][coord->x
+			- 1] == '0'))
+		add_door(program, *coord);
+	coord->x += 2;
+	if (coord->x < program->map.width && map[coord->y][coord->x] == '1'
+		&& coord->x + 1 < program->map.width && (map[coord->y][coord->x
+			+ 1] == '.' || map[coord->y][coord->x + 1] == '0'))
+	{
+		add_door(program, *coord);
+	}
+}
+
+void	door_vertical(t_program *program, t_coord_int *coord, char **map)
+{
+	coord->x -= 1;
+	coord->y -= 1;
+	if (coord->y >= 0 && map[coord->y][coord->x] == '1' && coord->y - 1 >= 0
+		&& (map[coord->y - 1][coord->x] == '.' || map[coord->y
+			- 1][coord->x] == '0'))
+		add_door(program, *coord);
+	coord->y += 2;
+	if (coord->y < program->map.height && map[coord->y][coord->x] == '1'
+		&& coord->y + 1 < program->map.height && (map[coord->y
+			+ 1][coord->x] == '.' || map[coord->y + 1][coord->x] == '0'))
+		add_door(program, *coord);
+}
+
+void	parse_door(t_program *program)
+{
+	char		**map;
+	t_coord_int	coord;
 
 	map = ft_strdup_split(program->map.content);
 	coord.x = -1;
@@ -329,27 +351,15 @@ void parse_door(t_program *program)
 			if (map[coord.y][coord.x] == '0')
 			{
 				flood_fill(program, map, coord.x, coord.y);
-				coord.x -= 1;
-				if (coord.x >= 0 && map[coord.y][coord.x] == '1' && coord.x - 1 >= 0 && (map[coord.y][coord.x - 1] == '.' || map[coord.y][coord.x - 1] == '0'))
-					add_door(program, coord);
-				coord.x += 2;
-				if (coord.x < program->map.width && map[coord.y][coord.x] == '1' && coord.x + 1 < program->map.width && (map[coord.y][coord.x + 1] == '.' || map[coord.y][coord.x + 1] == '0')) {
-					add_door(program, coord);
-				}
-				coord.x -= 1;
-				coord.y -= 1;
-				if (coord.y >= 0 && map[coord.y][coord.x] == '1' && coord.y - 1 >= 0 && (map[coord.y - 1][coord.x] == '.' || map[coord.y - 1][coord.x] == '0'))
-					add_door(program, coord);
-				coord.y += 2;
-				if (coord.y < program->map.height && map[coord.y][coord.x] == '1' && coord.y + 1 < program->map.height && (map[coord.y + 1][coord.x] == '.' || map[coord.y + 1][coord.x] == '0'))
-					add_door(program, coord);
+				door_horizontal(program, &coord, map);
+				door_vertical(program, &coord, map);
 			}
 		}
 	}
 	ft_freesplit(map);
 }
 
-void parse(t_program *program)
+void	parse(t_program *program)
 {
 	char	*line;
 	int		n_line;
@@ -369,7 +379,7 @@ void parse(t_program *program)
 				free(line);
 				parse_content(program);
 				fill_width(program);
-				break;
+				break ;
 			}
 			free(line);
 		}
@@ -378,46 +388,7 @@ void parse(t_program *program)
 	close_file(program);
 }
 
-bool	check_sides(char *str)
-{
-	return (str[0] == '1' && str[ft_strlen(str) - 1] == '1');
-}
-
-int	check_first_last(char *str)
-{
-	int	i;
-
-	i = 0;
-	while (str[i])
-	{
-		if (str[i] != ' ' || str[i] != '1')
-			return (0);
-		i++;
-	}
-	return (1);
-}
-
-int check_middle(char *str)
-{
-	int i;
-
-	i = 0;
-	while (str[i])
-	{
-		if (i == 0 || i == (int)ft_strlen(str) - 1)
-		{
-			if (str[i] != ' ' || str[i] != '1')
-				return (0);
-		}
-		else
-			if (str[i] != ' ' || str[i] != '0' || str[i] != '1')
-				return (0);
-		i++;
-	}
-	return (1);
-}
-
-int is_space_surrounded(t_program *program, char **map, int y, int x)
+int	is_space_surrounded(t_program *program, char **map, int y, int x)
 {
 	if (y != 0)
 		if (map[y - 1][x] != '1' && map[y - 1][x] != ' ')
@@ -434,10 +405,10 @@ int is_space_surrounded(t_program *program, char **map, int y, int x)
 	return (1);
 }
 
-int check_borders(t_program *program)
+int	check_borders(t_program *program)
 {
-	int y;
-	int x;
+	int	y;
+	int	x;
 
 	y = 0;
 	while (program->map.content[y])
@@ -457,42 +428,56 @@ int check_borders(t_program *program)
 	return (1);
 }
 
+void	count_player(t_program *program, t_coord_int *i, int *player)
+{
+	if (program->map.content[i->y][i->x] == 'N'
+		|| program->map.content[i->y][i->x] == 'S'
+		|| program->map.content[i->y][i->x] == 'W'
+		|| program->map.content[i->y][i->x] == 'E')
+	{
+		*player = *player + 1;
+		set_at(&program->map, i->x, i->y, '0');
+	}
+}
+
+int	parsing_utils(t_program *program, t_coord_int *i, int *player)
+{
+	while (program->map.content[i->y])
+	{
+		i->x = 0;
+		while (program->map.content[i->y][i->x])
+		{
+			if (program->map.content[i->y][i->x] == ' ')
+			{
+				if (!is_space_surrounded(program, program->map.content, i->y,
+						i->x))
+				{
+					print_error("Space character is not surrounded by 1's");
+					return (0);
+				}
+			}
+			i->x++;
+			count_player(program, i, player);
+		}
+		i->y++;
+	}
+	return (1);
+}
+
 int	parsing(t_program *program)
 {
-	int	y;
-	int	x;
-	int player;
+	t_coord_int	index;
+	int			player;
 
-	y = 0;
+	index.y = 0;
 	player = 0;
 	if (!check_borders(program))
 	{
 		print_error("Map is not fully bordered by 1's");
 		return (0);
 	}
-	while (program->map.content[y])
-	{
-		x = 0;
-		while (program->map.content[y][x])
-		{
-			if (program->map.content[y][x] == ' ')
-			{
-				if (!is_space_surrounded(program, program->map.content, y, x))
-				{
-					print_error("Space character is not surrounded by 1's");
-					return (0);
-				}
-			}
-			x++;
-			if (program->map.content[y][x] == 'N' || program->map.content[y][x] == 'S'
-				|| program->map.content[y][x] == 'W' || program->map.content[y][x] == 'E')
-			{
-				player++;
-				set_at(&program->map, x, y, '0');
-			}
-		}
-		y++;
-	}
+	if (parsing_utils(program, &index, &player) == 0)
+		return (0);
 	if (player > 1)
 	{
 		print_error("There can only be one spawn point");

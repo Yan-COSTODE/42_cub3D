@@ -6,16 +6,25 @@
 /*   By: ycostode <ycostode@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/28 20:27:56 by ycostode          #+#    #+#             */
-/*   Updated: 2024/03/28 20:27:56 by ycostode         ###   ########.fr       */
+/*   Updated: 2024/04/09 19:54:51 by ycostode         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
-void fill_minimap(t_program *program, t_coord_int x, t_coord_int y, uint32_t color)
+void	fill_minimap(t_program *program, t_coord_int x, t_coord_int y,
+		uint32_t color)
 {
-	t_coord_int index;
+	t_coord_int	index;
 
+	if (x.x < 0)
+		x.x = 0;
+	if (x.y >= (int)(program->minimap.img->width))
+		x.y = program->minimap.img->width - 1;
+	if (y.x < 0)
+		y.x = 0;
+	if (y.y >= (int)(program->minimap.img->height))
+		y.y = program->minimap.img->height - 1;
 	index.x = x.x;
 	while (index.x <= x.y)
 	{
@@ -29,10 +38,19 @@ void fill_minimap(t_program *program, t_coord_int x, t_coord_int y, uint32_t col
 	}
 }
 
-void fill_display(t_program *program, t_coord_int x, t_coord_int y, uint32_t color)
+void	fill_display(t_program *program, t_coord_int x, t_coord_int y,
+		uint32_t color)
 {
-	t_coord_int index;
+	t_coord_int	index;
 
+	if (x.x < 0)
+		x.x = 0;
+	if (x.y >= (int)(program->minimap.img->width))
+		x.y = program->minimap.img->width - 1;
+	if (y.x < 0)
+		y.x = 0;
+	if (y.y >= (int)(program->minimap.img->height))
+		y.y = program->minimap.img->height - 1;
 	index.x = x.x;
 	while (index.x <= x.y)
 	{
@@ -46,17 +64,15 @@ void fill_display(t_program *program, t_coord_int x, t_coord_int y, uint32_t col
 	}
 }
 
-uint32_t get_pixel(mlx_image_t* image, double xP, double yP)
+uint32_t	get_pixel(mlx_image_t *image, double xP, double yP)
 {
-	t_coord_int coord;
+	t_coord_int	coord;
+	t_color		test;
 
 	coord.x = (int)(xP);
 	coord.y = (int)(yP);
-
 	coord.x = fmax(0, fmin(coord.x, image->width - 1));
 	coord.y = fmax(0, fmin(coord.y, image->height - 1));
-
-	t_color test;
 	test.r = image->pixels[(image->height * coord.y + coord.x) * 4];
 	test.g = image->pixels[(image->height * coord.y + coord.x) * 4 + 1];
 	test.b = image->pixels[(image->height * coord.y + coord.x) * 4 + 2];
@@ -64,87 +80,115 @@ uint32_t get_pixel(mlx_image_t* image, double xP, double yP)
 	return (get_color_rgba(test.r, test.g, test.b, test.a));
 }
 
-void rotate_minimap(t_program *program)
+void	init_rotate(t_rotate *rotate, t_program *program)
 {
-	double angle = atan2(program->player.dir.y, -program->player.dir.x) + M_PI / 2;
+	rotate->angle = atan2(program->player.dir.y, -program->player.dir.x) + M_PI
+		/ 2;
+	rotate->x_rot.x = cos(rotate->angle);
+	rotate->y_rot.x = -sin(rotate->angle);
+	rotate->x_rot.y = sin(rotate->angle);
+	rotate->y_rot.y = cos(rotate->angle);
+	rotate->x = -1;
+}
 
-	t_coord xRot;
-	t_coord yRot;
-
-	xRot.x = cos(angle);
-	yRot.x = -sin(angle);
-	xRot.y = sin(angle);
-	yRot.y = cos(angle);
-
-	int x = -1;
-	while (++x < MINIMAP_SIZE * 2)
+void	rotate_utils(t_rotate *rotate, t_program *program)
+{
+	if (0 <= rotate->rotated.y
+		&& rotate->rotated.y < program->minimap.img->height
+		&& 0 <= rotate->rotated.x
+		&& rotate->rotated.x < program->minimap.img->width)
 	{
-		int y = -1;
-		while (++y < MINIMAP_SIZE)
-		{
-			double transX = x - MINIMAP_SIZE;
-			double transY = y - MINIMAP_SIZE / 2;
-			double rotatedX = transX * xRot.x + transY * xRot.y;
-			double rotatedY = transX * yRot.x + transY * yRot.y;
-			rotatedX += MINIMAP_SIZE + MINIMAP_CELL * 5;
-			rotatedY += MINIMAP_SIZE / 2 + MINIMAP_CELL * 10;
-			rotatedX = round(rotatedX);
-			rotatedY = round(rotatedY);
+		rotate->pixel = get_pixel(program->minimap.img, rotate->rotated.x,
+				rotate->rotated.y);
+		mlx_put_pixel(program->minimap.display, rotate->x, rotate->y,
+			rotate->pixel);
+	}
+}
 
-			if (0 <= rotatedY && rotatedY < program->minimap.img->height && 0 <= rotatedX && rotatedX < program->minimap.img->width)
-			{
-				uint32_t pixel = get_pixel(program->minimap.img, rotatedX, rotatedY);
-				mlx_put_pixel(program->minimap.display, x, y, pixel);
-			}
+void	rotate_minimap(t_program *program)
+{
+	t_rotate	rotate;
+
+	init_rotate(&rotate, program);
+	while (++rotate.x < (int)(program->minimap.display->width))
+	{
+		rotate.y = -1;
+		while (++rotate.y < (int)(program->minimap.display->height))
+		{
+			rotate.trans.x = rotate.x - MINIMAP_SIZE;
+			rotate.trans.y = rotate.y - MINIMAP_SIZE / 2;
+			rotate.rotated.x = rotate.trans.x * rotate.x_rot.x + rotate.trans.y
+				* rotate.x_rot.y;
+			rotate.rotated.y = rotate.trans.x * rotate.y_rot.x + rotate.trans.y
+				* rotate.y_rot.y;
+			rotate.rotated.x += MINIMAP_SIZE + MINIMAP_CELL * MINIMAP_CELLS / 2;
+			rotate.rotated.y += MINIMAP_SIZE / 2 + MINIMAP_CELL * MINIMAP_CELLS;
+			rotate.rotated.x = round(rotate.rotated.x);
+			rotate.rotated.y = round(rotate.rotated.y);
+			rotate_utils(&rotate, program);
 		}
 	}
 }
 
-void draw_minimap(t_program *program)
+void	init_draw(t_calcul *calcul, t_program *program)
 {
-	t_coord_int x;
-	t_coord_int y;
-	t_coord diff;
-	t_coord_int player;
-	t_coord_int index;
-	t_coord_int comp;
+	calcul->x.x = 0;
+	calcul->x.y = MINIMAP_SIZE * 2 - 1;
+	calcul->y.x = 0;
+	calcul->y.y = MINIMAP_SIZE - 1;
+	fill_display(program, calcul->x, calcul->y, get_color_rgba(47, 53, 66, 255
+			/ 4));
+	calcul->x.y = MINIMAP_SIZE * 3 - 1;
+	calcul->y.y = MINIMAP_SIZE * 3 - 1;
+	fill_minimap(program, calcul->x, calcul->y, get_color_rgba(47, 53, 66, 255
+			/ 4));
+	calcul->player.x = (int)(program->player.pos.x);
+	calcul->diff.x = program->player.pos.x - calcul->player.x;
+	calcul->player.y = (int)(program->map.height - program->player.pos.y);
+	calcul->diff.y = program->player.pos.y - calcul->player.y;
+	calcul->index.x = -1;
+}
 
-	x.x = 0;
-	x.y = MINIMAP_SIZE * 2 - 1;
-	y.x = 0;
-	y.y = MINIMAP_SIZE - 1;
-	fill_display(program, x, y, get_color_rgba(47, 53, 66, 255 / 4));
-	x.y = MINIMAP_SIZE * 3 - 1;
-	y.y = MINIMAP_SIZE * 3 - 1;
-	fill_minimap(program, x, y, get_color_rgba(47, 53, 66, 255 / 4));
-	player.x = (int)(program->player.pos.x);
-	diff.x = program->player.pos.x - player.x;
-	player.y = (int)(program->map.height - program->player.pos.y);
-	diff.y = program->player.pos.y - player.y;
-	index.x = -1;
-	while (++index.x < MINIMAP_CELLS * 3)
+void	draw_utils(t_calcul *calcul, t_program *program)
+{
+	calcul->x.x = calcul->index.x * MINIMAP_CELL - calcul->diff.x
+		* MINIMAP_CELL;
+	calcul->x.y = calcul->x.x + MINIMAP_CELL - 1;
+	if (calcul->x.x < 0)
+		calcul->x.x = 0;
+	calcul->y.x = calcul->index.y * MINIMAP_CELL - calcul->diff.y
+		* MINIMAP_CELL;
+	calcul->y.y = calcul->y.x + MINIMAP_CELL - 1;
+	if (calcul->y.x < 0)
+		calcul->y.x = 0;
+	if (get_at(program->map, calcul->comp.x, calcul->comp.y) == ' ')
+		;
+	else if (get_at(program->map, calcul->comp.x, calcul->comp.y) == '0'
+		|| get_at(program->map, calcul->comp.x, calcul->comp.y) == (int)(OPEN)
+		+ '0')
+		fill_minimap(program, calcul->x, calcul->y, program->map.floor.rgba);
+	else
+		fill_minimap(program, calcul->x, calcul->y, get_color_rgba(241, 242,
+				246, 255));
+}
+
+void	draw_minimap(t_program *program)
+{
+	t_calcul	calcul;
+
+	init_draw(&calcul, program);
+	while (++calcul.index.x < MINIMAP_CELLS * 3)
 	{
-		index.y = -1;
-		while (++index.y < MINIMAP_CELLS * 3)
+		calcul.index.y = -1;
+		while (++calcul.index.y < MINIMAP_CELLS * 3)
 		{
-			comp.x = player.x - MINIMAP_CELLS * 1.5 + index.x;
-			comp.y = player.y - MINIMAP_CELLS * 1.5 + index.y;
-			if (comp.x < 0 || comp.x > program->map.width - 1 || comp.y < 0 || comp.y > program->map.height - 1)
-				continue;
-			x.x = index.x * MINIMAP_CELL - diff.x * MINIMAP_CELL;
-			x.y = x.x + MINIMAP_CELL - 1;
-			if (x.x < 0)
-				x.x = 0;
-			y.x = index.y * MINIMAP_CELL - diff.y * MINIMAP_CELL;
-			y.y = y.x + MINIMAP_CELL - 1;
-			if (y.x < 0)
-				y.x = 0;
-			if (get_at(program->map, comp.x, comp.y) == ' ')
-				;
-			else if (get_at(program->map, comp.x, comp.y) == '0' || get_at(program->map, comp.x, comp.y) == (int)(OPEN) + '0')
-				fill_minimap(program, x, y, program->map.floor.rgba);
-			else
-				fill_minimap(program, x, y, get_color_rgba(241, 242, 246, 255));
+			calcul.comp.x = calcul.player.x - MINIMAP_CELLS * 1.5
+				+ calcul.index.x;
+			calcul.comp.y = calcul.player.y - MINIMAP_CELLS * 1.5
+				+ calcul.index.y;
+			if (0 <= calcul.comp.x && calcul.comp.x < program->map.width
+				&& 0 <= calcul.comp.y && calcul.comp.y < program->map.height)
+				draw_utils(&calcul, program);
 		}
 	}
 	rotate_minimap(program);

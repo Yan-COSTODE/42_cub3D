@@ -6,13 +6,13 @@
 /*   By: ycostode <ycostode@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/15 21:41:15 by ycostode          #+#    #+#             */
-/*   Updated: 2024/03/15 21:41:15 by ycostode         ###   ########.fr       */
+/*   Updated: 2024/04/09 18:12:46 by ycostode         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
-size_t ft_strlen_split(char **s)
+size_t	ft_strlen_split(char **s)
 {
 	size_t	i;
 
@@ -24,7 +24,7 @@ size_t ft_strlen_split(char **s)
 	return (i);
 }
 
-size_t ft_strlen(const char *s)
+size_t	ft_strlen(const char *s)
 {
 	size_t	i;
 
@@ -79,9 +79,9 @@ char	*ft_strdup(const char *s)
 char	**ft_strdup_split(char **s)
 {
 	char	**ptr;
-	int i;
+	int		i;
 
-	ptr = (char **)ft_calloc(ft_strlen_split(s) + 1, sizeof(char*));
+	ptr = (char **)ft_calloc(ft_strlen_split(s) + 1, sizeof(char *));
 	if (!ptr)
 		return (NULL);
 	i = -1;
@@ -115,7 +115,7 @@ char	*ft_strchr(const char *s, int c)
 
 char	*ft_strchr_str(const char *s, const char *c)
 {
-	int				i;
+	int	i;
 
 	if (!s)
 		return (NULL);

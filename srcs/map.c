@@ -6,7 +6,7 @@
 /*   By: ycostode <ycostode@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 17:58:51 by ycostode          #+#    #+#             */
-/*   Updated: 2024/03/25 17:58:51 by ycostode         ###   ########.fr       */
+/*   Updated: 2024/04/09 18:13:38 by ycostode         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,19 +26,4 @@ void	set_at(t_map *map, int x, int y, char c)
 	if (get_at(*map, x, y) == ' ')
 		return ;
 	map->content[y][x] = c;
-}
-
-void	print_map(t_map map)
-{
-	int x;
-	int y;
-
-	y = -1;
-	while (++y < map.height)
-	{
-		x = -1;
-		while (++x < map.width)
-			print_fd_char(1, get_at(map, x, y));
-		print_fd(1, "\n");
-	}
 }
