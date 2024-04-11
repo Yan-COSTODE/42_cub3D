@@ -67,30 +67,30 @@ void	fill_display(t_program *program, t_coord_int x, t_coord_int y,
 void	init_draw(t_calcul *calcul, t_program *program)
 {
 	calcul->x.x = 0;
-	calcul->x.y = MINIMAP_SIZE * 2 - 1;
+	calcul->x.y = MINIMAP_W - 1;
 	calcul->y.x = 0;
-	calcul->y.y = MINIMAP_SIZE - 1;
+	calcul->y.y = MINIMAP_H - 1;
 	fill_display(program, calcul->x, calcul->y, get_color_rgba(47, 53, 66, 255
 			/ 4));
-	calcul->x.y = MINIMAP_SIZE * 3 - 1;
-	calcul->y.y = MINIMAP_SIZE * 3 - 1;
+	calcul->x.y = MAP_SIZE - 1;
+	calcul->y.y = MAP_SIZE - 1;
 	fill_minimap(program, calcul->x, calcul->y, get_color_rgba(47, 53, 66, 255
 			/ 4));
 	calcul->player.x = (int)(program->player.pos.x);
 	calcul->diff.x = program->player.pos.x - calcul->player.x;
 	calcul->player.y = (int)(program->player.pos.y);
 	calcul->diff.y = program->player.pos.y - calcul->player.y;
-	calcul->index.x = -MINIMAP_CELLS * 1.5 - 1;
+	calcul->index.x = -MAP_CELLS * 0.5 - 1;
 }
 
 void	draw_utils(t_calcul *calcul, t_program *program)
 {
-	calcul->x.x = ((calcul->index.x - calcul->diff.x + MINIMAP_CELLS * 1.5)
-			* MINIMAP_CELL);
-	calcul->x.y = calcul->x.x + MINIMAP_CELL - 1;
-	calcul->y.x = ((calcul->index.y - calcul->diff.y + MINIMAP_CELLS * 1.5)
-			* MINIMAP_CELL);
-	calcul->y.y = calcul->y.x + MINIMAP_CELL - 1;
+	calcul->x.x = ((calcul->index.x - calcul->diff.x + MAP_CELLS * 0.5)
+			* CELL_SIZE);
+	calcul->x.y = calcul->x.x + CELL_SIZE - 1;
+	calcul->y.x = ((calcul->index.y - calcul->diff.y + MAP_CELLS * 0.5)
+			* CELL_SIZE);
+	calcul->y.y = calcul->y.x + CELL_SIZE - 1;
 	if (get_at(program->map, calcul->comp.x, calcul->comp.y) == ' ')
 		;
 	else if (get_at(program->map, calcul->comp.x, calcul->comp.y) == '0'
@@ -105,12 +105,12 @@ void	draw_utils(t_calcul *calcul, t_program *program)
 void	draw_minimap(t_program *program)
 {
 	t_calcul	calcul;
-	const int	max_size = MINIMAP_CELLS * 1.5;
+	const int	max_size = MAP_CELLS * 0.5;
 
 	init_draw(&calcul, program);
 	while (++calcul.index.x < max_size)
 	{
-		calcul.index.y = -MINIMAP_CELLS * 1.5 - 1;
+		calcul.index.y = -MAP_CELLS * 0.5 - 1;
 		while (++calcul.index.y < max_size)
 		{
 			calcul.comp.x = calcul.index.x + calcul.player.x;

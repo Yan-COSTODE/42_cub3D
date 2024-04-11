@@ -6,7 +6,7 @@
 /*   By: ycostode <ycostode@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/28 21:01:12 by ycostode          #+#    #+#             */
-/*   Updated: 2024/04/09 19:54:20 by ycostode         ###   ########.fr       */
+/*   Updated: 2024/04/11 17:03:00 by ycostode         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,37 +30,11 @@ void	parse_image(t_program *program, int *status, mlx_image_t **image,
 			mlx_resize_image(*image, MAX_RES, MAX_RES);
 			mlx_delete_texture(tex);
 		}
+		else
+			*status = EXIT_FAILURE;
 		free(tmp);
 	}
 	if (ft_strlen_split(args) != 2 || !*image)
-		return (parse_error(status, args[0]));
-}
-
-void	parse_color(int *status, t_color *color, char **args)
-{
-	char	**split;
-	char	*tmp;
-
-	if (ft_strlen_split(args) == 2)
-	{
-		split = ft_split(args[1], ',');
-		if (ft_strlen_split(split) != 3)
-			return (parse_error_color(status, args[0], split, NULL));
-		if (!atoi_convert(split[0], &color->r))
-			return (parse_error_color(status, args[0], split, "r"));
-		if (!atoi_convert(split[1], &color->g))
-			return (parse_error_color(status, args[0], split, "g"));
-		tmp = ft_substr(split[2], 0, ft_strchr(split[2], '\n') - split[2]);
-		if (!atoi_convert(tmp, &color->b))
-		{
-			free(tmp);
-			return (parse_error_color(status, args[0], split, "b"));
-		}
-		color->rgba = get_color_rgba(color->r, color->g, color->b, 255);
-		free(tmp);
-		ft_freesplit(split);
-	}
-	if (ft_strlen_split(args) != 2)
 		return (parse_error(status, args[0]));
 }
 
@@ -126,23 +100,18 @@ int	parsing(t_program *program)
 
 	index.y = 0;
 	player = 0;
+	if (program->exit_value == EXIT_FAILURE)
+		return (EXIT_FAILURE);
+	if (program->map.floor.rgba == -1 || program->map.ceiling.rgba == -1)
+		return (print_error("cub3D: Missing Color"));
 	if (!check_borders(program))
-	{
-		print_error("Map is not fully bordered by 1's");
-		return (0);
-	}
+		return (print_error("cub3D: Map is not fully bordered by 1's"));
 	if (parsing_utils(program, &index, &player) == 0)
-		return (0);
+		return (EXIT_FAILURE);
 	if (player > 1)
-	{
-		print_error("There can only be one spawn point");
-		return (0);
-	}
+		return (print_error("cub3D: There can only be one spawn point"));
 	if (player == 0)
-	{
-		print_error("No spawn point has been set");
-		return (0);
-	}
+		return (print_error("cub3D: No spawn point has been set"));
 	parse_door(program);
-	return (1);
+	return (EXIT_SUCCESS);
 }

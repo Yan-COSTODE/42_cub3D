@@ -63,14 +63,14 @@ void	rotate_minimap(t_program *program)
 		rotate.y = -1;
 		while (++rotate.y < (int)(program->minimap.display->height))
 		{
-			rotate.trans.x = rotate.x - MINIMAP_SIZE;
-			rotate.trans.y = rotate.y - MINIMAP_SIZE / 2;
+			rotate.trans.x = rotate.x - MINIMAP_W / 2;
+			rotate.trans.y = rotate.y - MINIMAP_H / 2;
 			rotate.rotated.x = rotate.trans.x * rotate.x_rot.x + rotate.trans.y
 				* rotate.x_rot.y;
 			rotate.rotated.y = rotate.trans.x * rotate.y_rot.x + rotate.trans.y
 				* rotate.y_rot.y;
-			rotate.rotated.x += MINIMAP_SIZE + MINIMAP_CELL * MINIMAP_CELLS / 2;
-			rotate.rotated.y += MINIMAP_SIZE / 2 + MINIMAP_CELL * MINIMAP_CELLS;
+			rotate.rotated.x += MINIMAP_W / 2 + CELL_SIZE * MINIMAP_CELLS;
+			rotate.rotated.y += MINIMAP_H / 2 + CELL_SIZE * MINIMAP_CELLS * 1.5;
 			rotate.rotated.x = round(rotate.rotated.x);
 			rotate.rotated.y = round(rotate.rotated.y);
 			rotate_utils(&rotate, program);

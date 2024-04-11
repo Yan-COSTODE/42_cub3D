@@ -6,7 +6,7 @@
 /*   By: ycostode <ycostode@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 15:32:06 by ycostode          #+#    #+#             */
-/*   Updated: 2024/04/11 15:33:10 by ycostode         ###   ########.fr       */
+/*   Updated: 2024/04/11 17:47:00 by ycostode         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,8 @@ int	parsing_utils(t_program *program, t_coord_int *i, int *player)
 				if (!is_space_surrounded(program, program->map.content, i->y,
 						i->x))
 				{
-					print_error("Space character is not surrounded by 1's");
+					print_error("cub3D: Space \
+					character is not surrounded by 1's");
 					return (0);
 				}
 			}

@@ -36,7 +36,7 @@ size_t	ft_strlen(const char *s)
 	return (i);
 }
 
-bool	atoi_convert(const char *s, unsigned char *n)
+bool	atoi_convert(const char *s, int *n)
 {
 	int		i;
 	long	tmp;

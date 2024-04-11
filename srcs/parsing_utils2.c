@@ -24,9 +24,13 @@ void	parse_content(t_program *program)
 	}
 	parse.final = parse.line;
 	parse.line = get_next_line(program->fd);
-	program->map.height++;
 	while (parse.line)
 	{
+		if (parse.line[0] == '\n')
+		{
+			free(parse.line);
+			parse.line = ft_strdup(" \n");
+		}
 		parse.tmp = ft_strjoin(parse.final, parse.line);
 		free(parse.final);
 		parse.final = parse.tmp;
@@ -34,9 +38,9 @@ void	parse_content(t_program *program)
 			program->map.width = ft_strlen(parse.line) - 1;
 		free(parse.line);
 		parse.line = get_next_line(program->fd);
-		program->map.height++;
 	}
 	program->map.content = ft_split(parse.final, '\n');
+	program->map.height = ft_strlen_split(program->map.content);
 	free(parse.final);
 }
 
@@ -68,18 +72,6 @@ void	fill_width(t_program *program)
 	}
 }
 
-void	flood_fill(t_program *program, char **map, int x, int y)
-{
-	if (y < 0 || y > program->map.height || x < 0 || x > program->map.width
-		|| map[y][x] != '0')
-		return ;
-	map[y][x] = '.';
-	flood_fill(program, map, x - 1, y);
-	flood_fill(program, map, x + 1, y);
-	flood_fill(program, map, x, y - 1);
-	flood_fill(program, map, x, y + 1);
-}
-
 int	is_space_surrounded(t_program *program, char **map, int y, int x)
 {
 	if (y != 0)
@@ -88,10 +80,10 @@ int	is_space_surrounded(t_program *program, char **map, int y, int x)
 	if (x != 0)
 		if (map[y][x - 1] != '1' && map[y][x - 1] != ' ')
 			return (0);
-	if (y != program->map.height - 1)
+	if (y < program->map.height)
 		if (map[y + 1][x] != '1' && map[y + 1][x] != ' ')
 			return (0);
-	if (x != (int)ft_strlen(map[y]) - 1)
+	if (x < (int)ft_strlen(map[y]))
 		if (map[y][x + 1] != '1' && map[y][x + 1] != ' ')
 			return (0);
 	return (1);

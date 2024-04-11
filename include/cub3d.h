@@ -6,7 +6,7 @@
 /*   By: gmarre <gmarre@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/09 15:19:27 by ycostode          #+#    #+#             */
-/*   Updated: 2024/04/11 15:34:32 by ycostode         ###   ########.fr       */
+/*   Updated: 2024/04/11 17:02:29 by ycostode         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,11 +30,14 @@
 # define HEIGHT 720
 # define WIDTH 1280
 # define MAX_RES 1024
-# define MINIMAP_CELLS 10
-# define MINIMAP_CELL 16
-# define MINIMAP_SIZE 160 // MINIMAP_CELL * MINIMAP_CELLS
+# define CELL_SIZE 16
 # define MINIMAP_OFFSET 16
 # define MINIMAP_PLAYER 8
+# define MINIMAP_CELLS 10
+# define MINIMAP_H 160
+# define MINIMAP_W 320
+# define MAP_CELLS 40
+# define MAP_SIZE 640
 # define CROUCH_SPEED 1.5
 # define MOVE_SPEED 3.0
 # define SPRINT_SPEED 5.0
@@ -50,7 +53,7 @@
 # define ANIM_DELAY 0.05
 # define MAX_BOBBING 50
 # define BIG 1e30
-# define MUSIC_LENGTH 208.0 // 3 * 60 + 28
+# define MUSIC_LENGTH 208.0
 # define RED_MASK 0xFF000000
 # define GREEN_MASK 0x00FF0000
 # define BLUE_MASK 0x0000FF00
@@ -71,10 +74,10 @@ char		**ft_freesplit(char **split);
 char		*ft_strjoin(char *s1, char *s2);
 char		*ft_strchr(const char *s, int c);
 char		**ft_split(char const *s, char c);
+bool		atoi_convert(const char *s, int *n);
 void		*ft_calloc(size_t nmemb, size_t size);
 char		*ft_strnjoin(char *s1, char *s2, int n);
 int			ft_strcmp(const char *s1, const char *s2);
-bool		atoi_convert(const char *s, unsigned char *n);
 size_t		ft_strlcpy(char *dst, const char *src, size_t size);
 char		*ft_substr(char const *s, unsigned int start, size_t len);
 
@@ -97,6 +100,7 @@ int			check_borders(t_program *program);
 void		parse_content(t_program *program);
 void		parse_error(int *status, char *name);
 uint32_t	get_color_rgba(int r, int g, int b, int a);
+void		parse_color(int *status, t_color *color, char **args);
 void		flood_fill(t_program *program, char **map, int x, int y);
 int			parsing_utils(t_program *program, t_coord_int *i, int *player);
 int			is_space_surrounded(t_program *program, char **map, int y, int x);
@@ -109,6 +113,7 @@ void		draw_minimap(t_program *program);
 void		rotate_minimap(t_program *program);
 char		get_at(const t_map map, int x, int y);
 void		set_at(t_map *map, int x, int y, char c);
+void		switch_map(mlx_key_data_t keydata, void *param);
 
 // MOVE
 void		jump(t_program *program);

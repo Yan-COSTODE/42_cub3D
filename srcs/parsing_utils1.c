@@ -56,5 +56,17 @@ void	parse_error_color(int *status, char *name, char **split, char *color)
 
 uint32_t	get_color_rgba(int r, int g, int b, int a)
 {
+	if (r < 0)
+		r = 0;
+	if (r > 255)
+		r = 255;
+	if (g < 0)
+		g = 0;
+	if (g > 255)
+		g = 255;
+	if (b < 0)
+		b = 0;
+	if (b > 255)
+		b = 255;
 	return (r << 24 | g << 16 | b << 8 | a);
 }

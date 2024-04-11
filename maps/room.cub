@@ -1,7 +1,7 @@
-NO ./textures/1.png
-SO ./textures/5.png
-WE ./textures/8.png
-EA ./textures/15.png
+NO ./textures/minecraft/1.png
+SO ./textures/minecraft/5.png
+WE ./textures/minecraft/8.png
+EA ./textures/minecraft/15.png
 
 F 25,25,25
 C 50,50,50

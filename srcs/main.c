@@ -25,7 +25,7 @@ int	main(int argc, char **argv)
 		on_destroy(&program);
 		return (EXIT_FAILURE);
 	}
-	if (!parsing(&program))
+	if (parsing(&program))
 	{
 		on_destroy(&program);
 		return (EXIT_FAILURE);
@@ -33,6 +33,7 @@ int	main(int argc, char **argv)
 	mlx_set_mouse_pos(program.mlx, WIDTH / 2, HEIGHT / 2);
 	mlx_close_hook(program.mlx, (void (*)(void *))on_destroy, &program);
 	mlx_mouse_hook(program.mlx, change_cursor, &program);
+	mlx_key_hook(program.mlx, switch_map, &program);
 	mlx_loop_hook(program.mlx, update, &program);
 	mlx_loop(program.mlx);
 	mlx_terminate(program.mlx);

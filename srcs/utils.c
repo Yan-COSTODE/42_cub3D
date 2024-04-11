@@ -6,7 +6,7 @@
 /*   By: ycostode <ycostode@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 15:03:07 by ycostode          #+#    #+#             */
-/*   Updated: 2024/04/11 15:03:07 by ycostode         ###   ########.fr       */
+/*   Updated: 2024/04/11 17:02:40 by ycostode         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,6 @@
 void	init_program(t_program *program)
 {
 	program->exit_value = 0;
-	program->map.height = 0;
-	program->map.width = 0;
-	program->map.content = NULL;
 	program->player.orientation = 0;
 	program->player.jump = false;
 	program->player.pitch = 0;
@@ -34,6 +31,11 @@ void	init_program(t_program *program)
 	program->player.moving = false;
 	program->door.len = 0;
 	program->door.elem = NULL;
+	program->map.content = NULL;
+	program->map.height = 0;
+	program->map.width = 0;
+	program->map.floor.rgba = -1;
+	program->map.ceiling.rgba = -1;
 }
 
 mlx_image_t	*parse_to(t_program *program, char *path, int width, int height)
@@ -61,6 +63,10 @@ void	img_setup(t_program *program)
 	mlx_image_to_window(program->mlx, program->map.img, 0, 0);
 	mlx_image_to_window(program->mlx, program->minimap.display, MINIMAP_OFFSET,
 		MINIMAP_OFFSET);
+	mlx_image_to_window(program->mlx, program->minimap.img, WIDTH / 2
+		- program->minimap.img->width / 2, HEIGHT / 2
+		- program->minimap.img->height / 2);
+	program->minimap.img->enabled = false;
 	program->minimap.img_player = parse_to(program, "./textures/player.png",
 			MINIMAP_PLAYER, MINIMAP_PLAYER);
 	program->door.img = parse_to(program, "./textures/door.png", MAX_RES,
@@ -92,4 +98,31 @@ void	change_cursor(mouse_key_t button, action_t action, modifier_key_t mods,
 		program->cursor = MLX_MOUSE_NORMAL;
 	else if (program->cursor == MLX_MOUSE_NORMAL)
 		program->cursor = MLX_MOUSE_HIDDEN;
+}
+
+void	switch_map(mlx_key_data_t keydata, void *param)
+{
+	t_program	*program;
+
+	program = param;
+	if (keydata.key == MLX_KEY_COMMA && keydata.action == MLX_PRESS)
+	{
+		program->minimap.img->enabled = !program->minimap.img->enabled;
+		program->minimap.display->enabled = !program->minimap.display->enabled;
+		program->hud.crosshair->enabled = program->minimap.display->enabled;
+		if (program->minimap.display->enabled)
+		{
+			program->minimap.img_player->instances[0].x = MINIMAP_OFFSET
+				+ MINIMAP_W / 2 - program->minimap.img_player->width / 2;
+			program->minimap.img_player->instances[0].y = MINIMAP_OFFSET
+				+ MINIMAP_H / 2 - program->minimap.img_player->height / 2;
+		}
+		else
+		{
+			program->minimap.img_player->instances[0].x = WIDTH / 2
+				- program->minimap.img_player->width / 2;
+			program->minimap.img_player->instances[0].y = HEIGHT / 2
+				- program->minimap.img_player->height / 2;
+		}
+	}
 }

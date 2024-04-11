@@ -6,7 +6,7 @@
 /*   By: ycostode <ycostode@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 15:03:15 by ycostode          #+#    #+#             */
-/*   Updated: 2024/04/11 15:03:15 by ycostode         ###   ########.fr       */
+/*   Updated: 2024/04/11 17:02:52 by ycostode         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,9 @@ int	start(t_program *program)
 	if (program->exit_value == EXIT_FAILURE)
 		return (EXIT_FAILURE);
 	program->map.img = mlx_new_image(program->mlx, WIDTH, HEIGHT);
-	program->minimap.img = mlx_new_image(program->mlx, MINIMAP_SIZE * 3,
-			MINIMAP_SIZE * 3);
-	program->minimap.display = mlx_new_image(program->mlx, MINIMAP_SIZE * 2,
-			MINIMAP_SIZE);
+	program->minimap.img = mlx_new_image(program->mlx, MAP_SIZE, MAP_SIZE);
+	program->minimap.display = mlx_new_image(program->mlx, MINIMAP_W,
+			MINIMAP_H);
 	img_setup(program);
 	if (program->hud.crosshair)
 		mlx_image_to_window(program->mlx, program->hud.crosshair, WIDTH / 2
@@ -33,8 +32,8 @@ int	start(t_program *program)
 			- program->hud.crosshair->height / 2);
 	if (program->minimap.img_player)
 		mlx_image_to_window(program->mlx, program->minimap.img_player,
-			MINIMAP_OFFSET + MINIMAP_SIZE - program->minimap.img_player->width
-			/ 2, MINIMAP_OFFSET + MINIMAP_SIZE / 2
+			MINIMAP_OFFSET + MINIMAP_W / 2 - program->minimap.img_player->width
+			/ 2, MINIMAP_OFFSET + MINIMAP_H / 2
 			- program->minimap.img_player->height / 2);
 	return (EXIT_SUCCESS);
 }
@@ -62,5 +61,6 @@ void	on_destroy(t_program *program)
 	mlx_close_window(program->mlx);
 	if (program->door.elem)
 		free(program->door.elem);
-	system("killall paplay");
+	if (program->timer.music != 0)
+		system("killall paplay");
 }

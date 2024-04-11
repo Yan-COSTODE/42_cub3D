@@ -6,7 +6,7 @@
 /*   By: gmarre <gmarre@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/09 16:31:55 by ycostode          #+#    #+#             */
-/*   Updated: 2024/04/09 20:06:42 by ycostode         ###   ########.fr       */
+/*   Updated: 2024/04/11 17:46:47 by ycostode         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,11 +48,11 @@ typedef struct s_coord
 
 typedef struct s_color
 {
-	unsigned char	r;
-	unsigned char	g;
-	unsigned char	b;
-	unsigned char	a;
-	uint32_t		rgba;
+	int				r;
+	int				g;
+	int				b;
+	int				a;
+	int64_t			rgba;
 }					t_color;
 
 typedef struct s_hud
