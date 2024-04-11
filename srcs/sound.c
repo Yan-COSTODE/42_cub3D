@@ -12,26 +12,6 @@
 
 #include "cub3d.h"
 
-void	play_land(void)
-{
-	system("paplay --volume=49152 sounds/Land.wav &");
-}
-
-void	play_jump(void)
-{
-	system("paplay --volume=49152 sounds/Jump.wav &");
-}
-
-void	play_door(void)
-{
-	system("paplay --volume=65536 sounds/Door.wav &");
-}
-
-void	play_door_boom(void)
-{
-	system("timeout 1s paplay --volume=65536 sounds/Boom.wav &");
-}
-
 void	play_walk(t_program *program)
 {
 	if (!program->player.moving && program->timer.footstep == 0)
@@ -59,11 +39,6 @@ void	play_background(t_program *program)
 	program->timer.music += program->mlx->delta_time;
 	if (program->timer.music >= MUSIC_LENGTH)
 		program->timer.music = 0;
-}
-
-void	play_gun(void)
-{
-	system("paplay --volume=32768 sounds/Gun.wav &");
 }
 
 void	update_sound(t_program *program)

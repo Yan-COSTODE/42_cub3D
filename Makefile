@@ -2,7 +2,7 @@ CC=cc
 NAME = cub3D
 SRCPATH = srcs/
 LIBMLX	= MLX42
-SRCS = gnl.c libft.c main.c map.c minimap.c move.c parsing.c print.c raycast.c shoot.c sound.c split.c
+SRCS = action.c door.c gnl.c libft1.c libft2.c libft3.c loop.c main.c map.c minimap.c minimap_utils.c move.c parsing.c parsing_utils1.c parsing_utils2.c parsing_utils3.c parsing_utils4.c print.c raycast.c raycast_utils1.c raycast_utils2.c rotate.c shoot.c sound.c sound_simple.c split.c utils.c
 SRCSINC = $(addprefix $(SRCPATH), $(SRCS))
 HEADERS = -I ./include -I $(LIBMLX)/include
 OBJS = $(SRCSINC:.c=.o)

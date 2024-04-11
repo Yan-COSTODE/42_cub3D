@@ -35,8 +35,8 @@ typedef struct s_door_elem
 
 typedef struct s_door
 {
-	t_door_elem		*elem;
 	int				len;
+	t_door_elem		*elem;
 	mlx_image_t		*img;
 }					t_door;
 
@@ -57,12 +57,12 @@ typedef struct s_color
 
 typedef struct s_hud
 {
-	mlx_image_t		*crosshair;
-	mlx_image_t		*gun[4];
+	bool			shoot;
 	int				gindex;
 	double			bobbing;
 	double			direction;
-	bool			shoot;
+	mlx_image_t		*gun[4];
+	mlx_image_t		*crosshair;
 }					t_hud;
 
 typedef struct s_minimap
@@ -74,75 +74,75 @@ typedef struct s_minimap
 
 typedef struct s_map
 {
-	mlx_image_t		*north;
-	mlx_image_t		*south;
-	mlx_image_t		*east;
-	mlx_image_t		*west;
-	t_color			floor;
-	t_color			ceiling;
-	char			**content;
-	mlx_image_t		*img;
 	int				width;
 	int				height;
+	t_color			floor;
+	char			**content;
+	t_color			ceiling;
+	mlx_image_t		*img;
+	mlx_image_t		*north;
+	mlx_image_t		*east;
+	mlx_image_t		*west;
+	mlx_image_t		*south;
 }					t_map;
 
 typedef struct s_player
 {
-	t_coord			plane;
+	bool			jump;
 	t_coord			dir;
 	t_coord			pos;
-	double			height;
-	double			pitch;
-	char			orientation;
 	bool			sprint;
-	bool			jump;
 	bool			crouch;
 	bool			moving;
+	t_coord			plane;
+	double			pitch;
+	double			height;
+	char			orientation;
 }					t_player;
 
 typedef struct s_timer
 {
 	double			gun;
 	double			music;
-	double			footstep;
 	double			breath;
+	double			footstep;
 }					t_timer;
 
 typedef struct s_raycast
 {
 	int				x;
-	t_coord			ray_dir;
-	double			camera_x;
-	t_coord_int		map;
-	t_coord			side_dist;
-	t_coord			delta_dist;
-	double			perp_wall_dist;
-	t_coord_int		step;
+	int				y;
 	int				hit;
 	int				side;
-	int				line_height;
-	int				draw_start;
-	int				draw_end;
 	int				offset;
-	mlx_image_t		*text;
+	int				draw_end;
 	double			wall_x;
+	t_coord_int		map;
 	t_coord_int		tex;
-	double			tex_step;
 	double			tex_pos;
-	int				y;
+	t_coord			ray_dir;
+	double			camera_x;
+	t_coord_int		step;
+	int				draw_start;
+	double			tex_step;
+	int				line_height;
+	mlx_image_t		*text;
+	t_coord			side_dist;
+	t_coord			delta_dist;
 	double			current_dist;
+	double			perp_wall_dist;
 }					t_raycast;
 
 typedef struct s_rotate
 {
+	int				x;
+	int				y;
 	double			angle;
 	t_coord			x_rot;
 	t_coord			y_rot;
-	int				x;
-	int				y;
 	t_coord			trans;
-	t_coord			rotated;
 	uint32_t		pixel;
+	t_coord			rotated;
 }					t_rotate;
 
 typedef struct s_parse
@@ -157,23 +157,23 @@ typedef struct s_calcul
 	t_coord_int		x;
 	t_coord_int		y;
 	t_coord			diff;
-	t_coord_int		player;
-	t_coord_int		index;
 	t_coord_int		comp;
+	t_coord_int		index;
+	t_coord_int		player;
 }					t_calcul;
 
 typedef struct s_program
 {
-	mlx_t			*mlx;
-	t_minimap		minimap;
-	t_map			map;
-	t_player		player;
-	t_hud			hud;
-	char			*filename;
 	int				fd;
-	int				exit_value;
-	t_timer			timer;
+	mlx_t			*mlx;
+	t_map			map;
+	t_hud			hud;
 	t_door			door;
+	t_timer			timer;
+	t_player		player;
+	char			*filename;
+	int				exit_value;
+	t_minimap		minimap;
 	enum mouse_mode	cursor;
 }					t_program;
 
