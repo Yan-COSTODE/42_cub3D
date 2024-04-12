@@ -1,7 +1,7 @@
-NO textures/test/north.xpm
-SO textures/test/south.xpm
-WE textures/test/west.xpm
-EA textures/test/east.xpm
+NO textures/minecraft/2.png
+SO textures/minecraft/4.png
+WE textures/minecraft/6.png
+EA textures/minecraft/8.png
 
 11111
 10001

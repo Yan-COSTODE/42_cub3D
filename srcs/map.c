@@ -16,7 +16,7 @@ char	get_at(const t_map map, int x, int y)
 {
 	if (!map.content)
 		return (' ');
-	if ((x > map.width || x < 0) || (y > map.height || y < 0))
+	if ((x >= map.width || x < 0) || (y >= map.height || y < 0))
 		return (' ');
 	return (map.content[y][x]);
 }

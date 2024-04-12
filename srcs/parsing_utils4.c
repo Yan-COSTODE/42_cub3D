@@ -102,8 +102,7 @@ int	parsing_utils(t_program *program, t_coord_int *i, int *player)
 				if (!is_space_surrounded(program, program->map.content, i->y,
 						i->x))
 				{
-					print_error("cub3D: Space \
-					character is not surrounded by 1's");
+					print_error("Space character is not surrounded by 1's");
 					return (0);
 				}
 			}

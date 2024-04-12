@@ -48,19 +48,15 @@ void	rotate_left(t_program *program, double rotate_speed)
 
 void	rotate_up_down(t_program *program, double diff)
 {
-	double	pitch;
 	double	rotate_speed;
 
+	diff /= HEIGHT / 2;
 	rotate_speed = program->mlx->delta_time * PITCH_SPEED;
-	if (diff > 0)
-		pitch = program->player.pitch + rotate_speed;
-	else
-		pitch = program->player.pitch - rotate_speed;
-	if (pitch > PITCH_LIMIT)
-		pitch = PITCH_LIMIT;
-	else if (pitch < -PITCH_LIMIT)
-		pitch = -PITCH_LIMIT;
-	program->player.pitch = pitch;
+	program->player.pitch += rotate_speed * MOUSE_SENS * diff;
+	if (program->player.pitch > PITCH_LIMIT)
+		program->player.pitch = PITCH_LIMIT;
+	else if (program->player.pitch < -PITCH_LIMIT)
+		program->player.pitch = -PITCH_LIMIT;
 }
 
 void	rotate(t_program *program)

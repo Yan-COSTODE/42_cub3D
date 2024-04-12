@@ -19,7 +19,7 @@ void	print_fd(int fd, const char *msg)
 
 int	print_error(const char *msg)
 {
-	print_fd(2, "\x1b[1;31mError\n");
+	print_fd(2, "\x1b[1;31mError\ncub3D: ");
 	print_fd(2, msg);
 	print_fd(2, "\x1b[0m\n");
 	return (EXIT_FAILURE);
@@ -27,7 +27,7 @@ int	print_error(const char *msg)
 
 int	print_perror(const char *msg)
 {
-	print_fd(2, "\x1b[1;31mError\n");
+	print_fd(2, "\x1b[1;31mError\ncub3D: ");
 	print_fd(2, msg);
 	print_fd(2, ": ");
 	perror("");

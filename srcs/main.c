@@ -18,7 +18,7 @@ int	main(int argc, char **argv)
 
 	(void)argv;
 	if (argc != 2)
-		return (print_error("cub3D: Wrong Number of Arguments"));
+		return (print_error("Wrong Number of Arguments"));
 	program.filename = ft_strdup(argv[1]);
 	if (start(&program) == EXIT_FAILURE)
 	{

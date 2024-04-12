@@ -29,6 +29,8 @@ void	init_program(t_program *program)
 	program->timer.gun = 0;
 	program->timer.breath = 0;
 	program->player.moving = false;
+	program->player.crouch = false;
+	program->player.sprint = false;
 	program->door.len = 0;
 	program->door.elem = NULL;
 	program->map.content = NULL;

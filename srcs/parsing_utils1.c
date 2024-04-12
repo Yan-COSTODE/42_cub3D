@@ -15,7 +15,7 @@
 void	close_file(t_program *program)
 {
 	if (close(program->fd) == -1)
-		program->exit_value = print_perror("cub3D: close");
+		program->exit_value = print_perror("close");
 }
 
 void	open_file(t_program *program)
@@ -24,12 +24,12 @@ void	open_file(t_program *program)
 		|| ft_strcmp(&program->filename[ft_strlen(program->filename) - 4],
 			".cub") != 0)
 	{
-		program->exit_value = print_error("cub3D: file error");
+		program->exit_value = print_error("file error");
 		return ;
 	}
 	program->fd = open(program->filename, O_RDONLY);
 	if (program->fd == -1)
-		program->exit_value = print_perror("cub3D: open");
+		program->exit_value = print_perror("open");
 }
 
 void	parse_error(int *status, char *name)

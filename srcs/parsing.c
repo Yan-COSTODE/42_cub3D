@@ -20,6 +20,7 @@ void	parse_image(t_program *program, int *status, mlx_image_t **image,
 
 	if (!image)
 		return ;
+	*image = NULL;
 	if (ft_strlen_split(args) == 2)
 	{
 		tmp = ft_substr(args[1], 0, ft_strchr(args[1], '\n') - args[1]);
@@ -83,6 +84,8 @@ void	parse(t_program *program)
 			{
 				free(line);
 				parse_content(program);
+				if (!program->map.content)
+					program->exit_value = EXIT_FAILURE;
 				fill_width(program);
 				break ;
 			}
@@ -103,15 +106,15 @@ int	parsing(t_program *program)
 	if (program->exit_value == EXIT_FAILURE)
 		return (EXIT_FAILURE);
 	if (program->map.floor.rgba == -1 || program->map.ceiling.rgba == -1)
-		return (print_error("cub3D: Missing Color"));
-	if (!check_borders(program))
-		return (print_error("cub3D: Map is not fully bordered by 1's"));
+		return (print_error("Missing Color"));
+	if (check_borders(program))
+		return (print_error("Map is not fully bordered by 1's"));
 	if (parsing_utils(program, &index, &player) == 0)
 		return (EXIT_FAILURE);
 	if (player > 1)
-		return (print_error("cub3D: There can only be one spawn point"));
+		return (print_error("There can only be one spawn point"));
 	if (player == 0)
-		return (print_error("cub3D: No spawn point has been set"));
+		return (print_error("No spawn point has been set"));
 	parse_door(program);
 	return (EXIT_SUCCESS);
 }

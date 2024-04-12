@@ -64,7 +64,7 @@ void	parse_color(int *status, t_color *color, char **args)
 
 void	flood_fill(t_program *program, char **map, int x, int y)
 {
-	if (y < 0 || y > program->map.height || x < 0 || x > program->map.width
+	if (y < 0 || y >= program->map.height || x < 0 || x >= program->map.width
 		|| map[y][x] != '0')
 		return ;
 	map[y][x] = '.';

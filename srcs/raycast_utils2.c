@@ -6,7 +6,7 @@
 /*   By: ycostode <ycostode@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 15:22:25 by ycostode          #+#    #+#             */
-/*   Updated: 2024/04/11 15:22:48 by ycostode         ###   ########.fr       */
+/*   Updated: 2024/04/12 16:49:43 by ycostode         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,11 +107,13 @@ void	raycast_7bis(t_raycast *raycast, t_program *program)
 
 	raycast->y = raycast->draw_end - (raycast->draw_end - raycast->draw_start)
 		* get_door(program, raycast->map) - 1;
+	++raycast->tex.x;
 	while (++raycast->y < raycast->draw_end)
 	{
 		raycast->tex.y = (int)(raycast->tex_pos) & (MAX_RES - 1);
 		raycast->tex_pos += raycast->tex_step;
-		coord = (MAX_RES * raycast->tex.y + (MAX_RES - raycast->tex.x)) * 4;
+		coord = (raycast->text->width * raycast->tex.y + (raycast->text->width
+					- raycast->tex.x)) * 4;
 		color = get_color_rgba(raycast->text->pixels[coord],
 				raycast->text->pixels[coord + 1], raycast->text->pixels[coord
 				+ 2], raycast->text->pixels[coord + 3]);

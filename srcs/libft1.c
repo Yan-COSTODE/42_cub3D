@@ -44,7 +44,7 @@ bool	atoi_convert(const char *s, int *n)
 	i = 0;
 	*n = 0;
 	tmp = 0;
-	if (s[i] == '-')
+	if (!s || !s[i] || s[i] == '-')
 		return (false);
 	if (s[i] == '+')
 		++i;

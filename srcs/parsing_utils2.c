@@ -6,7 +6,7 @@
 /*   By: ycostode <ycostode@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 15:32:06 by ycostode          #+#    #+#             */
-/*   Updated: 2024/04/11 15:33:02 by ycostode         ###   ########.fr       */
+/*   Updated: 2024/04/12 16:49:55 by ycostode         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void	parse_content(t_program *program)
 	t_parse	parse;
 
 	parse.line = get_next_line(program->fd);
-	while (parse.line[0] == '\n')
+	while (parse.line && parse.line[0] == '\n')
 	{
 		free(parse.line);
 		parse.line = get_next_line(program->fd);
@@ -26,11 +26,6 @@ void	parse_content(t_program *program)
 	parse.line = get_next_line(program->fd);
 	while (parse.line)
 	{
-		if (parse.line[0] == '\n')
-		{
-			free(parse.line);
-			parse.line = ft_strdup(" \n");
-		}
 		parse.tmp = ft_strjoin(parse.final, parse.line);
 		free(parse.final);
 		parse.final = parse.tmp;
@@ -52,7 +47,7 @@ void	fill_width(t_program *program)
 	int		j;
 
 	i = -1;
-	while (program->map.content[++i])
+	while (program->map.content && program->map.content[++i])
 	{
 		line_len = ft_strlen(program->map.content[i]);
 		if (line_len < program->map.width)
@@ -80,13 +75,41 @@ int	is_space_surrounded(t_program *program, char **map, int y, int x)
 	if (x != 0)
 		if (map[y][x - 1] != '1' && map[y][x - 1] != ' ')
 			return (0);
-	if (y < program->map.height)
+	if (y < program->map.height - 1)
 		if (map[y + 1][x] != '1' && map[y + 1][x] != ' ')
 			return (0);
-	if (x < (int)ft_strlen(map[y]))
+	if (x < (int)ft_strlen(map[y]) - 1)
 		if (map[y][x + 1] != '1' && map[y][x + 1] != ' ')
 			return (0);
 	return (1);
+}
+
+int	check_top(t_program *program)
+{
+	int	y;
+	int	x;
+
+	y = 0;
+	x = 0;
+	if (!program->map.content)
+		return (EXIT_FAILURE);
+	while (program->map.content[y][x] == ' ')
+		x++;
+	while (program->map.content[y][x] == '1')
+		x++;
+	if (program->map.content[y][x] && program->map.content[y][x] != '1'
+		&& program->map.content[y][x] != ' ')
+		return (EXIT_FAILURE);
+	y = program->map.height - 1;
+	x = 0;
+	while (program->map.content[y][x] == ' ')
+		x++;
+	while (program->map.content[y][x] == '1')
+		x++;
+	if (program->map.content[y][x] && program->map.content[y][x] != '1'
+		&& program->map.content[y][x] != ' ')
+		return (EXIT_FAILURE);
+	return (EXIT_SUCCESS);
 }
 
 int	check_borders(t_program *program)
@@ -95,19 +118,19 @@ int	check_borders(t_program *program)
 	int	x;
 
 	y = 0;
-	while (program->map.content[y])
+	while (program->map.content && program->map.content[y])
 	{
 		x = 0;
 		while (program->map.content[y][x] == ' ')
 			x++;
 		if (program->map.content[y][x] != '1')
-			return (0);
+			return (EXIT_FAILURE);
 		x = ft_strlen(program->map.content[y]) - 1;
 		while (program->map.content[y][x] == ' ')
 			x--;
 		if (program->map.content[y][x] != '1')
-			return (0);
+			return (EXIT_FAILURE);
 		y++;
 	}
-	return (1);
+	return (check_top(program));
 }
