@@ -123,12 +123,12 @@ int	check_borders(t_program *program)
 		x = 0;
 		while (program->map.content[y][x] == ' ')
 			x++;
-		if (program->map.content[y][x] != '1')
+		if (program->map.content[y][x] && program->map.content[y][x] != '1')
 			return (EXIT_FAILURE);
 		x = ft_strlen(program->map.content[y]) - 1;
 		while (program->map.content[y][x] == ' ')
 			x--;
-		if (program->map.content[y][x] != '1')
+		if (program->map.content[y][x] && program->map.content[y][x] != '1')
 			return (EXIT_FAILURE);
 		y++;
 	}
